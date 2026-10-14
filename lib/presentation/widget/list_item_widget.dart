@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class ListItemWidget extends StatelessWidget {
+  const ListItemWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 76.h,
+      color: Colors.transparent,
+      child: Row(
+        children: [
+          Container(
+            // Needs a width too: inside a Row an empty Container shrinks to 0
+            width: 60.r,
+            height: 60.r,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.lightBlue,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Group Title",
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 16),
+              ),
+              Text(
+                "Last message preview",
+                style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
+              ),
+            ],
+          ),
+          Spacer(),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                "12:34 PM",
+                style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
+              ),
+              SizedBox(height: 4.h),
+              Container(
+                width: 20.r,
+                height: 20.r,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFF636366),
+                ),
+                child: Center(
+                  child: Text(
+                    "3",
+                    style: GoogleFonts.inter(color: Colors.black, fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
