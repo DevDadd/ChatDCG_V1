@@ -1,3 +1,4 @@
+import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
 import 'package:chatdcg_demo/presentation/pages/home_page.dart';
 import 'package:chatdcg_demo/presentation/pages/login_page.dart';
 import 'package:flutter/material.dart';
@@ -15,14 +16,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // designSize is the frame size of the Figma/mockup the UI is drawn from
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) =>
           MaterialApp(debugShowCheckedModeBanner: false, home: child),
-      child: const HomePage(),
+      child: const ChatPage(),
     );
   }
 }
