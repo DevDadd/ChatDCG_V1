@@ -13,6 +13,8 @@ abstract class _$AuthenStateCWProxy {
 
   AuthenState errorMessage(String? errorMessage);
 
+  AuthenState userStatus(UserStatusDto? userStatus);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -21,7 +23,12 @@ abstract class _$AuthenStateCWProxy {
   /// ```dart
   /// AuthenState(...).copyWith(id: 12, name: "My name")
   /// ```
-  AuthenState call({AuthenStatus status, User? user, String? errorMessage});
+  AuthenState call({
+    AuthenStatus status,
+    User? user,
+    String? errorMessage,
+    UserStatusDto? userStatus,
+  });
 }
 
 /// Callable proxy for `copyWith` functionality.
@@ -41,6 +48,10 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
   AuthenState errorMessage(String? errorMessage) =>
       call(errorMessage: errorMessage);
 
+  @override
+  AuthenState userStatus(UserStatusDto? userStatus) =>
+      call(userStatus: userStatus);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -54,6 +65,7 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
     Object? status = const $CopyWithPlaceholder(),
     Object? user = const $CopyWithPlaceholder(),
     Object? errorMessage = const $CopyWithPlaceholder(),
+    Object? userStatus = const $CopyWithPlaceholder(),
   }) {
     return AuthenState(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -68,6 +80,10 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
           ? _value.errorMessage
           // ignore: cast_nullable_to_non_nullable
           : errorMessage as String?,
+      userStatus: userStatus == const $CopyWithPlaceholder()
+          ? _value.userStatus
+          // ignore: cast_nullable_to_non_nullable
+          : userStatus as UserStatusDto?,
     );
   }
 }

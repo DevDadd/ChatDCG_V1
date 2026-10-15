@@ -19,7 +19,12 @@ class ChatPage extends StatelessWidget {
               SizedBox(
                 height: 13.h,
                 width: 13.h,
-                child: SvgPicture.asset("assets/arrow_back.svg"),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: SvgPicture.asset("assets/arrow_back.svg"),
+                ),
               ),
               SizedBox(width: 7.w),
               Text(

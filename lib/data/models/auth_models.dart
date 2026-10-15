@@ -60,7 +60,6 @@ class RegisterRequest {
   Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
 }
 
-/// Body of both login (200) and register (201): `{"user": {...}}`.
 @JsonSerializable(createToJson: false)
 class AuthResponse {
   const AuthResponse({required this.user});

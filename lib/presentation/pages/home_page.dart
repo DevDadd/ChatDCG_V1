@@ -1,3 +1,5 @@
+import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
+import 'package:chatdcg_demo/presentation/pages/contacts_page.dart';
 import 'package:chatdcg_demo/presentation/widget/list_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,7 +26,12 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
         leadingWidth: 72,
         leading: TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ContactsPage()),
+            );
+          },
           child: Text(
             "Edit",
             style: GoogleFonts.inter(
@@ -76,7 +83,15 @@ class HomePage extends StatelessWidget {
               child: ListView.separated(
                 itemCount: 15,
                 itemBuilder: (context, index) {
-                  return ListItemWidget();
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChatPage()),
+                      );
+                    },
+                    child: ListItemWidget(),
+                  );
                 },
                 // Starts past the 60.r avatar so the line only spans the text area
                 separatorBuilder: (context, index) => Divider(

@@ -1,4 +1,7 @@
+import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
+import 'package:chatdcg_demo/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,9 +18,13 @@ final _labelStyle = WidgetStateTextStyle.resolveWith(
 void _unfocus(PointerDownEvent _) =>
     FocusManager.instance.primaryFocus?.unfocus();
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
 
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +56,9 @@ class LoginPage extends StatelessWidget {
             ),
             SizedBox(height: 24.h),
             TextField(
+              controller: context.read<AuthenCubit>().accountController,
               cursorColor: Colors.lightBlue,
+              style: GoogleFonts.inter(color: Colors.white),
               onTapOutside: _unfocus,
               decoration: InputDecoration(
                 labelText: "Username",
@@ -66,7 +75,9 @@ class LoginPage extends StatelessWidget {
             ),
             SizedBox(height: 32.h),
             TextField(
+              controller: context.read<AuthenCubit>().passwordController,
               cursorColor: Colors.lightBlue,
+              style: GoogleFonts.inter(color: Colors.white),
               onTapOutside: _unfocus,
               decoration: InputDecoration(
                 labelText: "Password",
@@ -86,7 +97,24 @@ class LoginPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: ElevatedButton(
-        onPressed: () {},
+        onPressed: () async {
+          final cubit = context.read<AuthenCubit>();
+          final success = await cubit.login();
+          if (!context.mounted) return;
+          if (success) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const HomePage()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(cubit.state.errorMessage ?? 'Đăng nhập thất bại'),
+              ),
+            );
+          }
+        },
+
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
