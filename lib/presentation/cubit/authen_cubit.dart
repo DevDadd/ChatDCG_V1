@@ -118,6 +118,25 @@ class AuthenCubit extends Cubit<AuthenState> {
     }
   }
 
+  Future<void> getHistory(int otherUserId) async {
+    emit(
+      state.copyWith(history: null, isHistoryLoading: true, errorMessage: null),
+    );
+    try {
+      final response = await _repository.getHistory(otherUserId);
+      emit(state.copyWith(history: response, isHistoryLoading: false));
+    } on AuthException catch (e) {
+      emit(state.copyWith(isHistoryLoading: false, errorMessage: e.message));
+    } catch (_) {
+      emit(
+        state.copyWith(
+          isHistoryLoading: false,
+          errorMessage: 'Không tải được tin nhắn, vui lòng thử lại',
+        ),
+      );
+    }
+  }
+
   void _startPresence() {
     _presence?.cancel();
     _presence = _repository.presence().listen(

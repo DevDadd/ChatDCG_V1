@@ -87,7 +87,10 @@ class HomePage extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ChatPage()),
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ChatPage(id: 1, isOnline: true, userName: "Hi"),
+                        ),
                       );
                     },
                     child: ListItemWidget(),

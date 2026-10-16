@@ -1,5 +1,6 @@
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
+import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
 import 'package:chatdcg_demo/presentation/widget/list_user_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -64,9 +65,23 @@ class _ContactsPageState extends State<ContactsPage> {
             return ListView.separated(
               itemCount: users.length,
               itemBuilder: (context, index) {
-                return ListUserWidget(
-                  userName: users[index].displayName ?? "",
-                  status: users[index].isOnline ?? false,
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatPage(
+                          id: users[index].userId ?? 0,
+                          isOnline: users[index].isOnline ?? false,
+                          userName: users[index].displayName ?? "",
+                        ),
+                      ),
+                    );
+                  },
+                  child: ListUserWidget(
+                    userName: users[index].displayName ?? "",
+                    status: users[index].isOnline ?? false,
+                  ),
                 );
               },
               separatorBuilder: (context, index) => Divider(

@@ -15,6 +15,10 @@ abstract class _$AuthenStateCWProxy {
 
   AuthenState userStatus(UserStatusDto? userStatus);
 
+  AuthenState history(MessageHistoryDto? history);
+
+  AuthenState isHistoryLoading(bool isHistoryLoading);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -28,6 +32,8 @@ abstract class _$AuthenStateCWProxy {
     User? user,
     String? errorMessage,
     UserStatusDto? userStatus,
+    MessageHistoryDto? history,
+    bool isHistoryLoading,
   });
 }
 
@@ -52,6 +58,13 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
   AuthenState userStatus(UserStatusDto? userStatus) =>
       call(userStatus: userStatus);
 
+  @override
+  AuthenState history(MessageHistoryDto? history) => call(history: history);
+
+  @override
+  AuthenState isHistoryLoading(bool isHistoryLoading) =>
+      call(isHistoryLoading: isHistoryLoading);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -66,6 +79,8 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
     Object? user = const $CopyWithPlaceholder(),
     Object? errorMessage = const $CopyWithPlaceholder(),
     Object? userStatus = const $CopyWithPlaceholder(),
+    Object? history = const $CopyWithPlaceholder(),
+    Object? isHistoryLoading = const $CopyWithPlaceholder(),
   }) {
     return AuthenState(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -84,6 +99,16 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
           ? _value.userStatus
           // ignore: cast_nullable_to_non_nullable
           : userStatus as UserStatusDto?,
+      history: history == const $CopyWithPlaceholder()
+          ? _value.history
+          // ignore: cast_nullable_to_non_nullable
+          : history as MessageHistoryDto?,
+      isHistoryLoading:
+          isHistoryLoading == const $CopyWithPlaceholder() ||
+              isHistoryLoading == null
+          ? _value.isHistoryLoading
+          // ignore: cast_nullable_to_non_nullable
+          : isHistoryLoading as bool,
     );
   }
 }

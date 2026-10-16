@@ -144,6 +144,43 @@ final $typed_data.Uint8List getUsersStatusResponseDescriptor =
         'ChZHZXRVc2Vyc1N0YXR1c1Jlc3BvbnNlEiYKBXVzZXJzGAEgAygLMhAuY2hhdC5Vc2VyU3RhdH'
         'VzUgV1c2Vycw==');
 
+@$core.Deprecated('Use getConversationHistoryRequestDescriptor instead')
+const GetConversationHistoryRequest$json = {
+  '1': 'GetConversationHistoryRequest',
+  '2': [
+    {'1': 'other_user_id', '3': 1, '4': 1, '5': 3, '10': 'otherUserId'},
+  ],
+};
+
+/// Descriptor for `GetConversationHistoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getConversationHistoryRequestDescriptor =
+    $convert.base64Decode(
+        'Ch1HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVxdWVzdBIiCg1vdGhlcl91c2VyX2lkGAEgASgDUg'
+        'tvdGhlclVzZXJJZA==');
+
+@$core.Deprecated('Use getConversationHistoryResponseDescriptor instead')
+const GetConversationHistoryResponse$json = {
+  '1': 'GetConversationHistoryResponse',
+  '2': [
+    {
+      '1': 'messages',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ChatMessage',
+      '10': 'messages'
+    },
+    {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
+  ],
+};
+
+/// Descriptor for `GetConversationHistoryResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getConversationHistoryResponseDescriptor =
+    $convert.base64Decode(
+        'Ch5HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVzcG9uc2USLQoIbWVzc2FnZXMYASADKAsyES5jaG'
+        'F0LkNoYXRNZXNzYWdlUghtZXNzYWdlcxIfCgt0b3RhbF9jb3VudBgCIAEoBVIKdG90YWxDb3Vu'
+        'dA==');
+
 @$core.Deprecated('Use sendMessageRequestDescriptor instead')
 const SendMessageRequest$json = {
   '1': 'SendMessageRequest',

@@ -1,4 +1,5 @@
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
 import 'package:equatable/equatable.dart';
@@ -14,6 +15,8 @@ class AuthenState extends Equatable {
     this.user,
     this.errorMessage,
     this.userStatus,
+    this.history,
+    this.isHistoryLoading = false,
   });
 
   final AuthenStatus status;
@@ -25,9 +28,21 @@ class AuthenState extends Equatable {
   final String? errorMessage;
 
   final UserStatusDto? userStatus;
+
+  // Old messages of the chat being opened, oldest first
+  final MessageHistoryDto? history;
+  final bool isHistoryLoading;
+
   bool get isLoading => status == AuthenStatus.loading;
   bool get isAuthenticated => status == AuthenStatus.authenticated;
 
   @override
-  List<Object?> get props => [status, user, errorMessage, userStatus];
+  List<Object?> get props => [
+    status,
+    user,
+    errorMessage,
+    userStatus,
+    history,
+    isHistoryLoading,
+  ];
 }

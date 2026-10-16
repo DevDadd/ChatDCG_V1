@@ -62,6 +62,15 @@ class ChatServiceClient extends $grpc.Client {
     return $createUnaryCall(_$getUsersStatus, request, options: options);
   }
 
+  $grpc.ResponseFuture<$0.GetConversationHistoryResponse>
+      getConversationHistory(
+    $0.GetConversationHistoryRequest request, {
+    $grpc.CallOptions? options,
+  }) {
+    return $createUnaryCall(_$getConversationHistory, request,
+        options: options);
+  }
+
   $grpc.ResponseFuture<$0.SendMessageResponse> sendMessage(
     $0.SendMessageRequest request, {
     $grpc.CallOptions? options,
@@ -142,6 +151,11 @@ class ChatServiceClient extends $grpc.Client {
           '/chat.ChatService/GetUsersStatus',
           ($0.GetUsersStatusRequest value) => value.writeToBuffer(),
           $0.GetUsersStatusResponse.fromBuffer);
+  static final _$getConversationHistory = $grpc.ClientMethod<
+          $0.GetConversationHistoryRequest, $0.GetConversationHistoryResponse>(
+      '/chat.ChatService/GetConversationHistory',
+      ($0.GetConversationHistoryRequest value) => value.writeToBuffer(),
+      $0.GetConversationHistoryResponse.fromBuffer);
   static final _$sendMessage =
       $grpc.ClientMethod<$0.SendMessageRequest, $0.SendMessageResponse>(
           '/chat.ChatService/SendMessage',
@@ -214,6 +228,15 @@ abstract class ChatServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.GetUsersStatusRequest.fromBuffer(value),
         ($0.GetUsersStatusResponse value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$0.GetConversationHistoryRequest,
+            $0.GetConversationHistoryResponse>(
+        'GetConversationHistory',
+        getConversationHistory_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) =>
+            $0.GetConversationHistoryRequest.fromBuffer(value),
+        ($0.GetConversationHistoryResponse value) => value.writeToBuffer()));
     $addMethod(
         $grpc.ServiceMethod<$0.SendMessageRequest, $0.SendMessageResponse>(
             'SendMessage',
@@ -305,6 +328,15 @@ abstract class ChatServiceBase extends $grpc.Service {
 
   $async.Future<$0.GetUsersStatusResponse> getUsersStatus(
       $grpc.ServiceCall call, $0.GetUsersStatusRequest request);
+
+  $async.Future<$0.GetConversationHistoryResponse> getConversationHistory_Pre(
+      $grpc.ServiceCall $call,
+      $async.Future<$0.GetConversationHistoryRequest> $request) async {
+    return getConversationHistory($call, await $request);
+  }
+
+  $async.Future<$0.GetConversationHistoryResponse> getConversationHistory(
+      $grpc.ServiceCall call, $0.GetConversationHistoryRequest request);
 
   $async.Future<$0.SendMessageResponse> sendMessage_Pre($grpc.ServiceCall $call,
       $async.Future<$0.SendMessageRequest> $request) async {

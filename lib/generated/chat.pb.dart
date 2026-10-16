@@ -629,6 +629,139 @@ class GetUsersStatusResponse extends $pb.GeneratedMessage {
   $pb.PbList<UserStatus> get users => $_getList(0);
 }
 
+class GetConversationHistoryRequest extends $pb.GeneratedMessage {
+  factory GetConversationHistoryRequest({
+    $fixnum.Int64? otherUserId,
+  }) {
+    final result = GetConversationHistoryRequest._();
+    if (otherUserId != null) result.otherUserId = otherUserId;
+    return result;
+  }
+
+  GetConversationHistoryRequest._();
+
+  factory GetConversationHistoryRequest.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      GetConversationHistoryRequest()..mergeFromBuffer(data, registry);
+  factory GetConversationHistoryRequest.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      GetConversationHistoryRequest()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GetConversationHistoryRequest',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'chat'),
+      createEmptyInstance: GetConversationHistoryRequest.$_createMessage)
+    ..aInt64(1, _omitFieldNames ? '' : 'otherUserId')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetConversationHistoryRequest clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetConversationHistoryRequest copyWith(
+          void Function(GetConversationHistoryRequest) updates) =>
+      super.copyWith(
+              (message) => updates(message as GetConversationHistoryRequest))
+          as GetConversationHistoryRequest;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated(
+      'Use GetConversationHistoryRequest() / GetConversationHistoryRequest.new instead')
+  static GetConversationHistoryRequest create() =>
+      GetConversationHistoryRequest._();
+  static $pb.GeneratedMessage $_createMessage() =>
+      GetConversationHistoryRequest._();
+  @$core.override
+  GetConversationHistoryRequest createEmptyInstance() =>
+      GetConversationHistoryRequest._();
+  @$core.pragma('dart2js:noInline')
+  static GetConversationHistoryRequest getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetConversationHistoryRequest>(
+          GetConversationHistoryRequest.$_createMessage);
+  static GetConversationHistoryRequest? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $fixnum.Int64 get otherUserId => $_getI64(0);
+  @$pb.TagNumber(1)
+  set otherUserId($fixnum.Int64 value) => $_setInt64(0, value);
+  @$pb.TagNumber(1)
+  $core.bool hasOtherUserId() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearOtherUserId() => $_clearField(1);
+}
+
+class GetConversationHistoryResponse extends $pb.GeneratedMessage {
+  factory GetConversationHistoryResponse({
+    $core.Iterable<ChatMessage>? messages,
+    $core.int? totalCount,
+  }) {
+    final result = GetConversationHistoryResponse._();
+    if (messages != null) result.messages.addAll(messages);
+    if (totalCount != null) result.totalCount = totalCount;
+    return result;
+  }
+
+  GetConversationHistoryResponse._();
+
+  factory GetConversationHistoryResponse.fromBuffer($core.List<$core.int> data,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      GetConversationHistoryResponse()..mergeFromBuffer(data, registry);
+  factory GetConversationHistoryResponse.fromJson($core.String json,
+          [$pb.ExtensionRegistry registry = $pb.ExtensionRegistry.EMPTY]) =>
+      GetConversationHistoryResponse()..mergeFromJson(json, registry);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(
+      _omitMessageNames ? '' : 'GetConversationHistoryResponse',
+      package: const $pb.PackageName(_omitMessageNames ? '' : 'chat'),
+      createEmptyInstance: GetConversationHistoryResponse.$_createMessage)
+    ..pPM<ChatMessage>(1, _omitFieldNames ? '' : 'messages',
+        subBuilder: ChatMessage.$_createMessage)
+    ..aI(2, _omitFieldNames ? '' : 'totalCount')
+    ..hasRequiredFields = false;
+
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetConversationHistoryResponse clone() => deepCopy();
+  @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
+  GetConversationHistoryResponse copyWith(
+          void Function(GetConversationHistoryResponse) updates) =>
+      super.copyWith(
+              (message) => updates(message as GetConversationHistoryResponse))
+          as GetConversationHistoryResponse;
+
+  @$core.override
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  @$core.Deprecated(
+      'Use GetConversationHistoryResponse() / GetConversationHistoryResponse.new instead')
+  static GetConversationHistoryResponse create() =>
+      GetConversationHistoryResponse._();
+  static $pb.GeneratedMessage $_createMessage() =>
+      GetConversationHistoryResponse._();
+  @$core.override
+  GetConversationHistoryResponse createEmptyInstance() =>
+      GetConversationHistoryResponse._();
+  @$core.pragma('dart2js:noInline')
+  static GetConversationHistoryResponse getDefault() => _defaultInstance ??=
+      $pb.GeneratedMessage.$_defaultFor<GetConversationHistoryResponse>(
+          GetConversationHistoryResponse.$_createMessage);
+  static GetConversationHistoryResponse? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $pb.PbList<ChatMessage> get messages => $_getList(0);
+
+  @$pb.TagNumber(2)
+  $core.int get totalCount => $_getIZ(1);
+  @$pb.TagNumber(2)
+  set totalCount($core.int value) => $_setSignedInt32(1, value);
+  @$pb.TagNumber(2)
+  $core.bool hasTotalCount() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearTotalCount() => $_clearField(2);
+}
+
 class SendMessageRequest extends $pb.GeneratedMessage {
   factory SendMessageRequest({
     $fixnum.Int64? conversationId,

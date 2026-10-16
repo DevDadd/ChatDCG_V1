@@ -1,10 +1,12 @@
 import 'package:chatdcg_demo/data/gRPC/gRPC_client.dart';
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:chatdcg_demo/di.dart';
 import 'package:chatdcg_demo/domain/exceptions/auth_exception.dart';
 import 'package:chatdcg_demo/domain/repository/authen_repository.dart';
 import 'package:chatdcg_demo/generated/chat.pb.dart' as pb;
+import 'package:fixnum/fixnum.dart';
 import 'package:grpc/grpc.dart';
 
 class AuthenRepositoryImpl implements AuthenRepository {
@@ -71,6 +73,31 @@ class AuthenRepositoryImpl implements AuthenRepository {
           lastSeen: event.lastSeen,
         ),
       );
+
+  Message _map(pb.ChatMessage m) => Message(
+    messageId: m.messageId.toInt(),
+    conversationId: m.conversationId.toInt(),
+    senderId: m.senderId.toInt(),
+    senderName: m.senderName,
+    content: m.content,
+    timestamp: DateTime.tryParse(m.timestamp)?.toLocal(), // server gửi UTC
+  );
+
+  @override
+  Future<MessageHistoryDto> getHistory(int otherUserId) async {
+    try {
+      final res = await _grpc.chat.getConversationHistory(
+        pb.GetConversationHistoryRequest(otherUserId: Int64(otherUserId)),
+        options: _options,
+      );
+      return MessageHistoryDto(
+        messages: res.messages.map(_map).toList(),
+        totalCount: res.totalCount,
+      );
+    } on GrpcError catch (e) {
+      throw AuthException(_message(e), statusCode: e.code);
+    }
+  }
 
   Future<AuthResponse> _guard(Future<pb.AuthResponse> Function() call) async {
     try {

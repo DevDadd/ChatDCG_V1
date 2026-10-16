@@ -1,10 +1,40 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
+import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
+import 'package:chatdcg_demo/presentation/widget/message_bubble_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+class ChatPage extends StatefulWidget {
+  ChatPage({
+    super.key,
+    required this.id,
+    required this.isOnline,
+    required this.userName,
+  });
+  final String userName;
+  final int id;
+  final bool isOnline;
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    final cubit = context.read<AuthenCubit>();
+    cubit.getHistory(widget.id).then((_) {
+      log(jsonEncode(cubit.state.history), name: 'ChatPage');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +81,7 @@ class ChatPage extends StatelessWidget {
         title: Column(
           children: [
             Text(
-              "DaCoolGuy",
+              widget.userName,
               style: GoogleFonts.inter(
                 fontSize: 17,
                 fontWeight: FontWeight.w500,
@@ -59,8 +89,11 @@ class ChatPage extends StatelessWidget {
               ),
             ),
             Text(
-              "last seen just now",
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.grey),
+              widget.isOnline ? "Online" : "Offline",
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: widget.isOnline ? Colors.lightBlue : Colors.grey,
+              ),
             ),
           ],
         ),
@@ -69,6 +102,35 @@ class ChatPage extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Image.asset("assets/background_chat.jpg", fit: BoxFit.cover),
+          ),
+          Positioned.fill(
+            child: BlocBuilder<AuthenCubit, AuthenState>(
+              builder: (context, state) {
+                if (state.isHistoryLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final messages = state.history?.messages ?? [];
+                return ListView.builder(
+                  // Reversed so the list opens at the newest message
+                  reverse: true,
+                  padding: EdgeInsets.only(
+                    left: 8.w,
+                    right: 8.w,
+                    top: 8.h,
+                    // Leave room for the input bar at the bottom
+                    bottom: 58.h + MediaQuery.of(context).padding.bottom,
+                  ),
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[messages.length - 1 - index];
+                    return MessageBubbleWidget(
+                      message: message,
+                      isMine: message.senderId != widget.id,
+                    );
+                  },
+                );
+              },
+            ),
           ),
           Positioned(
             left: 0,
