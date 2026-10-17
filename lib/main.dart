@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
-import 'package:chatdcg_demo/presentation/pages/login_page.dart';
+import 'package:chatdcg_demo/presentation/pages/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context, child) =>
             MaterialApp(debugShowCheckedModeBanner: false, home: child),
-        child: const LoginPage(),
+        child: const SplashPage(),
       ),
     );
   }
