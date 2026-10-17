@@ -17,6 +17,7 @@ class AuthenState extends Equatable {
     this.userStatus,
     this.history,
     this.isHistoryLoading = false,
+    this.isOtherTyping = false,
   });
 
   final AuthenStatus status;
@@ -33,6 +34,9 @@ class AuthenState extends Equatable {
   final MessageHistoryDto? history;
   final bool isHistoryLoading;
 
+  // The other person in the open chat is typing
+  final bool isOtherTyping;
+
   bool get isLoading => status == AuthenStatus.loading;
   bool get isAuthenticated => status == AuthenStatus.authenticated;
 
@@ -44,5 +48,6 @@ class AuthenState extends Equatable {
     userStatus,
     history,
     isHistoryLoading,
+    isOtherTyping,
   ];
 }

@@ -19,6 +19,8 @@ abstract class _$AuthenStateCWProxy {
 
   AuthenState isHistoryLoading(bool isHistoryLoading);
 
+  AuthenState isOtherTyping(bool isOtherTyping);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -34,6 +36,7 @@ abstract class _$AuthenStateCWProxy {
     UserStatusDto? userStatus,
     MessageHistoryDto? history,
     bool isHistoryLoading,
+    bool isOtherTyping,
   });
 }
 
@@ -65,6 +68,10 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
   AuthenState isHistoryLoading(bool isHistoryLoading) =>
       call(isHistoryLoading: isHistoryLoading);
 
+  @override
+  AuthenState isOtherTyping(bool isOtherTyping) =>
+      call(isOtherTyping: isOtherTyping);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -81,6 +88,7 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
     Object? userStatus = const $CopyWithPlaceholder(),
     Object? history = const $CopyWithPlaceholder(),
     Object? isHistoryLoading = const $CopyWithPlaceholder(),
+    Object? isOtherTyping = const $CopyWithPlaceholder(),
   }) {
     return AuthenState(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -109,6 +117,11 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
           ? _value.isHistoryLoading
           // ignore: cast_nullable_to_non_nullable
           : isHistoryLoading as bool,
+      isOtherTyping:
+          isOtherTyping == const $CopyWithPlaceholder() || isOtherTyping == null
+          ? _value.isOtherTyping
+          // ignore: cast_nullable_to_non_nullable
+          : isOtherTyping as bool,
     );
   }
 }

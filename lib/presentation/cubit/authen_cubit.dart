@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chatdcg_demo/data/models/auth_models.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
+import 'package:chatdcg_demo/data/models/type_status_stream_dto.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:chatdcg_demo/di.dart';
 import 'package:chatdcg_demo/domain/exceptions/auth_exception.dart';
@@ -18,15 +19,82 @@ class AuthenCubit extends Cubit<AuthenState> {
   final TextEditingController chatController = TextEditingController();
   final AuthenRepository _repository = getIt<AuthenRepository>();
   StreamSubscription<Message>? _messageStream;
+  StreamSubscription<TypingStreamDto>? _typingStream;
   int? _streamConversationId;
   StreamSubscription<UserStatus>? _presence;
   Timer? _stopTypingTimer;
   bool _isTyping = false;
   DateTime _lastTypingSent = DateTime.fromMicrosecondsSinceEpoch(0);
 
+  Timer? _otherTypingTimer;
+
+  void _onTyping(TypingStreamDto event) {
+    _logTyping(
+      'nhận ${event.displayName} (${event.userId}) '
+      'is_typing=${event.isTyping}, conversation ${event.conversationId}',
+    );
+    if (event.conversationId != _streamConversationId?.toString()) {
+      _logTyping('bỏ qua: không phải conversation đang mở');
+      return;
+    }
+
+    final isTyping = event.isTyping ?? false;
+    _otherTypingTimer?.cancel();
+    if (isTyping) {
+      _otherTypingTimer = Timer(const Duration(seconds: 5), () {
+        _logTyping('5s không nhận được gì, ẩn "đang gõ"');
+        if (!isClosed) emit(state.copyWith(isOtherTyping: false));
+      });
+    }
+    emit(state.copyWith(isOtherTyping: isTyping));
+  }
+
   void startMessageStream(int conversationId) {
     _streamConversationId = conversationId;
     _listenMessages(conversationId);
+    _listenTyping(conversationId);
+  }
+
+  void _listenTyping(int conversationId) {
+    _typingStream?.cancel();
+    _logTyping('mở stream typing, conversation $conversationId');
+    _typingStream = _repository
+        // 0 = server uses the logged-in user (x-user-id)
+        .streamTypingStatus(conversationId, 0)
+        .listen(
+          _onTyping,
+          onError: (Object e) {
+            _logTyping('lỗi stream typing, conversation $conversationId: $e');
+            _restartTypingStream(conversationId);
+          },
+          onDone: () {
+            _logTyping(
+              'server đóng stream typing, conversation $conversationId',
+            );
+            _restartTypingStream(conversationId);
+          },
+        );
+  }
+
+  void _restartTypingStream(int conversationId) {
+    _typingStream?.cancel();
+    _typingStream = null;
+    _otherTypingTimer?.cancel();
+    if (!isClosed) emit(state.copyWith(isOtherTyping: false));
+    _logTyping(
+      'kết nối lại stream typing sau 2s, conversation $conversationId',
+    );
+    Future.delayed(const Duration(seconds: 2), () {
+      if (isClosed ||
+          _streamConversationId != conversationId ||
+          _typingStream != null) {
+        _logTyping(
+          'bỏ kết nối lại stream typing, conversation $conversationId',
+        );
+        return;
+      }
+      _listenTyping(conversationId);
+    });
   }
 
   void onChatTextChange() {
@@ -93,8 +161,6 @@ class AuthenCubit extends Cubit<AuthenState> {
         );
   }
 
-  // debugPrint (not dart:developer log) so it also shows in release builds:
-  // adb logcat -s flutter
   void _logStream(String text) => debugPrint('[MessageStream] $text');
 
   void _restartMessageStream(int conversationId) {
@@ -102,7 +168,6 @@ class AuthenCubit extends Cubit<AuthenState> {
     _messageStream = null;
     _logStream('kết nối lại sau 2s, conversation $conversationId');
     Future.delayed(const Duration(seconds: 2), () {
-      // Đã rời màn chat / mở chat khác / đã kết nối lại rồi
       if (isClosed ||
           _streamConversationId != conversationId ||
           _messageStream != null) {
@@ -114,7 +179,6 @@ class AuthenCubit extends Cubit<AuthenState> {
   }
 
   void stopMessageStream() {
-    // Before the id is cleared, or the other side keeps seeing "typing"
     _logTyping('rời trang chat');
     _setTyping(false);
     if (_streamConversationId != null) {
@@ -123,6 +187,11 @@ class AuthenCubit extends Cubit<AuthenState> {
     _streamConversationId = null;
     _messageStream?.cancel();
     _messageStream = null;
+    _typingStream?.cancel();
+    _typingStream = null;
+    // Or the next chat opens showing "typing" from this one
+    _otherTypingTimer?.cancel();
+    if (!isClosed) emit(state.copyWith(isOtherTyping: false));
   }
 
   void _onMessage(Message message) {
@@ -185,7 +254,6 @@ class AuthenCubit extends Cubit<AuthenState> {
   }) async {
     if (state.isLoading) return false;
 
-    // Empty optional fields are omitted so the backend falls back to account
     final trimmedUsername = username?.trim() ?? '';
     final trimmedDisplayName = displayName?.trim() ?? '';
 
@@ -382,6 +450,7 @@ class AuthenCubit extends Cubit<AuthenState> {
 
   @override
   Future<void> close() {
+    _otherTypingTimer?.cancel();
     stopMessageStream();
     _presence?.cancel();
     accountController.dispose();

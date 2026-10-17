@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
 import 'package:chatdcg_demo/presentation/widget/message_bubble_widget.dart';
+import 'package:chatdcg_demo/presentation/widget/typing_bubble_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -133,6 +134,8 @@ class _ChatPageState extends State<ChatPage> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 final messages = state.history?.messages ?? [];
+                // reverse: true, so index 0 is the bottom of the chat
+                final typing = state.isOtherTyping ? 1 : 0;
                 return ListView.builder(
                   reverse: true,
                   padding: EdgeInsets.only(
@@ -141,9 +144,11 @@ class _ChatPageState extends State<ChatPage> {
                     top: 8.h,
                     bottom: 58.h + MediaQuery.of(context).padding.bottom,
                   ),
-                  itemCount: messages.length,
+                  itemCount: messages.length + typing,
                   itemBuilder: (context, index) {
-                    final message = messages[messages.length - 1 - index];
+                    if (index < typing) return const TypingBubbleWidget();
+                    final message =
+                        messages[messages.length - 1 - (index - typing)];
                     return MessageBubbleWidget(
                       message: message,
                       isMine: message.senderId != widget.id,

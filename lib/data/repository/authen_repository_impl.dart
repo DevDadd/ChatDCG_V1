@@ -5,6 +5,7 @@ import 'package:chatdcg_demo/data/models/auth_models.dart';
 import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
+import 'package:chatdcg_demo/data/models/type_status_stream_dto.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:chatdcg_demo/di.dart';
 import 'package:chatdcg_demo/domain/exceptions/auth_exception.dart';
@@ -171,6 +172,26 @@ class AuthenRepositoryImpl implements AuthenRepository {
       throw AuthException(_message(e), statusCode: e.code);
     }
   }
+
+  @override
+  Stream<TypingStreamDto> streamTypingStatus(int conversationid, int userid) =>
+      _grpc.chat
+          .subscribeTyping(
+            pb.SubscribeTypingRequest(
+              conversationId: Int64(conversationid),
+              userId: Int64(userid),
+            ),
+          )
+          .map(
+            (e) => TypingStreamDto(
+              conversationId: e.conversationId.toString(),
+              userId: e.userId.toString(),
+              username: e.username,
+              displayName: e.displayName,
+              isTyping: e.isTyping,
+              timestamp: DateTime.tryParse(e.timestamp)?.toLocal(), // UTC
+            ),
+          );
 
   String _message(GrpcError e) => switch (e.code) {
     StatusCode.unauthenticated => 'Sai tài khoản hoặc mật khẩu',
