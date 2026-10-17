@@ -48,6 +48,11 @@ class MessageBubbleWidget extends StatelessWidget {
                 style: GoogleFonts.inter(fontSize: 11, color: Colors.white60),
               ),
             ],
+            // Written offline, waiting for SyncMessages
+            if (message.isOffline) ...[
+              SizedBox(width: 4.w),
+              Icon(Icons.schedule, size: 12.sp, color: Colors.white60),
+            ],
           ],
         ),
       ),

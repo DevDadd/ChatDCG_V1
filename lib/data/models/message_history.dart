@@ -31,6 +31,7 @@ class Message {
   String? content;
   @JsonKey(name: "timestamp")
   DateTime? timestamp;
+  bool isOffline;
 
   Message({
     this.messageId,
@@ -39,6 +40,7 @@ class Message {
     this.senderName,
     this.content,
     this.timestamp,
+    this.isOffline = false,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>

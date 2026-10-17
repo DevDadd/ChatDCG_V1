@@ -11,6 +11,7 @@ import 'package:chatdcg_demo/domain/repository/authen_repository.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:grpc/grpc.dart';
 
 class AuthenCubit extends Cubit<AuthenState> {
   AuthenCubit() : super(const AuthenState());
@@ -25,6 +26,9 @@ class AuthenCubit extends Cubit<AuthenState> {
   Timer? _stopTypingTimer;
   bool _isTyping = false;
   DateTime _lastTypingSent = DateTime.fromMicrosecondsSinceEpoch(0);
+  final List<Message> _offlineQueue = [];
+  Timer? _syncTimer;
+  bool _isSyncing = false;
 
   Timer? _otherTypingTimer;
 
@@ -356,11 +360,16 @@ class AuthenCubit extends Cubit<AuthenState> {
       content: text,
       timestamp: DateTime.now(),
     );
-    // clear() does not fire onChanged, so stop typing here
     chatController.clear();
     _logTyping('gửi tin nhắn');
     _setTyping(false);
     _emitMessages([...messages, pending]);
+
+    if (_offlineQueue.isNotEmpty) {
+      _queueOffline(pending);
+      syncOfflineMessages();
+      return;
+    }
 
     try {
       final response = await _repository.sendMessage(
@@ -374,8 +383,14 @@ class AuthenCubit extends Cubit<AuthenState> {
       );
       pending.messageId = int.tryParse(response.messageId ?? '');
     } on AuthException catch (e) {
+      if (isClosed) return;
+      if (_isNetworkError(e)) {
+        _queueOffline(pending);
+        return;
+      }
       _removeMessage(pending, text, e.message);
     } catch (_) {
+      if (isClosed) return;
       _removeMessage(pending, text, 'Gửi tin nhắn thất bại, vui lòng thử lại');
     }
   }
@@ -397,6 +412,77 @@ class AuthenCubit extends Cubit<AuthenState> {
     _emitMessages(messages);
     if (chatController.text.isEmpty) chatController.text = text;
     emit(state.copyWith(errorMessage: error));
+  }
+
+  void _logSync(String text) => debugPrint('[Sync] $text');
+
+  bool _isNetworkError(AuthException e) =>
+      e.statusCode == StatusCode.unavailable ||
+      e.statusCode == StatusCode.deadlineExceeded;
+
+  void _queueOffline(Message message) {
+    message.isOffline = true;
+    _offlineQueue.add(message);
+    _logSync(
+      'xếp hàng: "${message.content}" (${_offlineQueue.length} tin chờ)',
+    );
+    // Message là mutable: emit list mới để bubble hiện trạng thái chờ
+    _emitMessages([...?state.history?.messages]);
+    // Thử lại mỗi 5s cho tới khi có mạng
+    _syncTimer ??= Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => syncOfflineMessages(),
+    );
+  }
+
+  Future<void> syncOfflineMessages() async {
+    if (_isSyncing || _offlineQueue.isEmpty) return;
+    _isSyncing = true;
+    final batch = List.of(_offlineQueue);
+    _logSync('SyncMessages: gửi ${batch.length} tin');
+    try {
+      final response = await _repository.syncMessages([
+        for (final m in batch)
+          SendMessageRequest(
+            conversationId: m.conversationId.toString(),
+            content: m.content,
+            clientTimestampMs: m.timestamp!.millisecondsSinceEpoch.toString(),
+          ),
+      ]);
+      _logSync(response.message ?? '');
+      if (isClosed) return;
+      _offlineQueue.removeWhere(batch.contains);
+      for (final m in batch) {
+        m.isOffline = false;
+      }
+      _emitMessages([...?state.history?.messages]);
+      if ((response.failedCount ?? 0) > 0) {
+        emit(
+          state.copyWith(
+            errorMessage: '${response.failedCount} tin không gửi được',
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (isClosed) return;
+      if (_isNetworkError(e)) {
+        _logSync('vẫn mất mạng, thử lại sau 5s');
+      } else {
+        // Server từ chối cả loạt → bỏ, không thử lại mãi
+        _logSync('server từ chối: ${e.message}');
+        _offlineQueue.removeWhere(batch.contains);
+        _emitMessages(
+          [...?state.history?.messages]..removeWhere(batch.contains),
+        );
+        emit(state.copyWith(errorMessage: e.message));
+      }
+    } finally {
+      _isSyncing = false;
+      if (_offlineQueue.isEmpty) {
+        _syncTimer?.cancel();
+        _syncTimer = null;
+      }
+    }
   }
 
   void _startPresence() {
@@ -445,12 +531,17 @@ class AuthenCubit extends Cubit<AuthenState> {
     stopMessageStream();
     _presence?.cancel();
     _presence = null;
+    _offlineQueue.clear();
+    _syncTimer?.cancel();
+    _syncTimer = null;
+
     emit(const AuthenState());
   }
 
   @override
   Future<void> close() {
     _otherTypingTimer?.cancel();
+    _syncTimer?.cancel();
     stopMessageStream();
     _presence?.cancel();
     accountController.dispose();

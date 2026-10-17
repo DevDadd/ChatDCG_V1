@@ -5,6 +5,7 @@ import 'package:chatdcg_demo/data/models/auth_models.dart';
 import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
+import 'package:chatdcg_demo/data/models/sync_message_response.dart';
 import 'package:chatdcg_demo/data/models/type_status_stream_dto.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:chatdcg_demo/di.dart';
@@ -155,6 +156,33 @@ class AuthenRepositoryImpl implements AuthenRepository {
       .map(_map);
 
   Int64 _int64(String? value) => Int64.tryParseInt(value ?? '') ?? Int64.ZERO;
+
+  @override
+  Future<SyncMessageResponse> syncMessages(
+    List<SendMessageRequest> requests,
+  ) async {
+    try {
+      final res = await _grpc.chat.syncMessages(
+        Stream.fromIterable(
+          requests.map(
+            (r) => pb.SendMessageRequest(
+              conversationId: _int64(r.conversationId),
+              content: r.content ?? '',
+              clientTimestampMs: _int64(r.clientTimestampMs),
+            ),
+          ),
+        ),
+        options: _options,
+      );
+      return SyncMessageResponse(
+        receivedCount: res.receivedCount,
+        failedCount: res.failedCount,
+        message: res.message,
+      );
+    } on GrpcError catch (e) {
+      throw AuthException(_message(e), statusCode: e.code);
+    }
+  }
 
   Future<AuthResponse> _guard(Future<pb.AuthResponse> Function() call) async {
     try {
