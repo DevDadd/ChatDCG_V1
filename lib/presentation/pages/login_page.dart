@@ -1,5 +1,5 @@
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
-import 'package:chatdcg_demo/presentation/pages/home_page.dart';
+import 'package:chatdcg_demo/presentation/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -104,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
           if (success) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomePage()),
+              MaterialPageRoute(builder: (_) => const MainPage()),
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
