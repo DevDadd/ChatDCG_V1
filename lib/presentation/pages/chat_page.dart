@@ -102,8 +102,6 @@ class _ChatPageState extends State<ChatPage> {
                 color: Colors.white,
               ),
             ),
-            // Presence events update state.userStatus, so read it live;
-            // widget.isOnline is only the value when the page was opened
             BlocSelector<AuthenCubit, AuthenState, bool>(
               selector: (state) {
                 final users = state.userStatus?.users ?? [];
@@ -136,13 +134,11 @@ class _ChatPageState extends State<ChatPage> {
                 }
                 final messages = state.history?.messages ?? [];
                 return ListView.builder(
-                  // Reversed so the list opens at the newest message
                   reverse: true,
                   padding: EdgeInsets.only(
                     left: 8.w,
                     right: 8.w,
                     top: 8.h,
-                    // Leave room for the input bar at the bottom
                     bottom: 58.h + MediaQuery.of(context).padding.bottom,
                   ),
                   itemCount: messages.length,
@@ -184,29 +180,43 @@ class _ChatPageState extends State<ChatPage> {
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: TextField(
-                                    textInputAction: TextInputAction.send,
-                                    // Keeps the keyboard open after sending
-                                    onEditingComplete: () =>
-                                        context.read<AuthenCubit>().sendMessage(),
-                                    controller: context
-                                        .read<AuthenCubit>()
-                                        .chatController,
-                                    style: GoogleFonts.inter(
-                                      fontSize: 15,
-                                      color: Colors.white,
-                                    ),
-                                    cursorColor: Colors.white,
-                                    decoration: InputDecoration(
-                                      hintText: "Messages",
-                                      hintStyle: GoogleFonts.inter(
+                                  child: Focus(
+                                    onFocusChange: (hasFocus) {
+                                      if (!hasFocus) {
+                                        context
+                                            .read<AuthenCubit>()
+                                            .stopTyping();
+                                      }
+                                    },
+                                    child: TextField(
+                                      onChanged: (value) {
+                                        context
+                                            .read<AuthenCubit>()
+                                            .onChatTextChange();
+                                      },
+                                      textInputAction: TextInputAction.send,
+                                      onEditingComplete: () => context
+                                          .read<AuthenCubit>()
+                                          .sendMessage(),
+                                      controller: context
+                                          .read<AuthenCubit>()
+                                          .chatController,
+                                      style: GoogleFonts.inter(
                                         fontSize: 15,
-                                        color: const Color(0xFF8E8E93),
+                                        color: Colors.white,
                                       ),
-                                      border: InputBorder.none,
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 12.w,
+                                      cursorColor: Colors.white,
+                                      decoration: InputDecoration(
+                                        hintText: "Messages",
+                                        hintStyle: GoogleFonts.inter(
+                                          fontSize: 15,
+                                          color: const Color(0xFF8E8E93),
+                                        ),
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.symmetric(
+                                          horizontal: 12.w,
+                                        ),
                                       ),
                                     ),
                                   ),

@@ -13,6 +13,7 @@ abstract class AuthenRepository {
   Future<MessageHistoryDto> getHistory(int otherUserId);
   Future<MessageBaseResponse> sendMessage(SendMessageRequest request);
   Stream<Message> streamMessages(int conversationid);
+  Future<void> sentTypingStatus(int conversationid, bool isTyping, int userId);
 
   /// Online/offline changes of other users. The caller counts as online
   /// while this stream is open.

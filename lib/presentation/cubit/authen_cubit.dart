@@ -19,12 +19,60 @@ class AuthenCubit extends Cubit<AuthenState> {
   final AuthenRepository _repository = getIt<AuthenRepository>();
   StreamSubscription<Message>? _messageStream;
   int? _streamConversationId;
-
   StreamSubscription<UserStatus>? _presence;
+  Timer? _stopTypingTimer;
+  bool _isTyping = false;
+  DateTime _lastTypingSent = DateTime.fromMicrosecondsSinceEpoch(0);
 
   void startMessageStream(int conversationId) {
     _streamConversationId = conversationId;
     _listenMessages(conversationId);
+  }
+
+  void onChatTextChange() {
+    if (chatController.text.trim().isEmpty) {
+      _logTyping('ô nhập trống');
+      _setTyping(false);
+      return;
+    }
+    final now = DateTime.now();
+    if (!_isTyping || now.difference(_lastTypingSent).inSeconds >= 3) {
+      _setTyping(true);
+    }
+    _stopTypingTimer?.cancel();
+    _stopTypingTimer = Timer(const Duration(seconds: 2), () {
+      _logTyping('ngừng gõ 2s');
+      _setTyping(false);
+    });
+  }
+
+  void stopTyping() {
+    _logTyping('ô nhập mất focus');
+    _setTyping(false);
+  }
+
+  void _logTyping(String text) => debugPrint('[Typing] $text');
+
+  void _setTyping(bool isTyping) {
+    if (!isTyping) _stopTypingTimer?.cancel();
+    if (!isTyping && !_isTyping) return;
+
+    final conversationId = _streamConversationId;
+    if (conversationId == null) {
+      _logTyping('bỏ qua is_typing=$isTyping: chưa có conversation');
+      return;
+    }
+
+    _isTyping = isTyping;
+    _lastTypingSent = DateTime.now();
+    _logTyping('gửi is_typing=$isTyping, conversation $conversationId');
+
+    _repository
+        .sentTypingStatus(conversationId, isTyping, state.user?.id ?? 0)
+        .then(
+          (_) => _logTyping('server nhận is_typing=$isTyping'),
+          onError: (Object e) => _logTyping('lỗi is_typing=$isTyping: $e'),
+        );
   }
 
   void _listenMessages(int conversationId) {
@@ -66,6 +114,9 @@ class AuthenCubit extends Cubit<AuthenState> {
   }
 
   void stopMessageStream() {
+    // Before the id is cleared, or the other side keeps seeing "typing"
+    _logTyping('rời trang chat');
+    _setTyping(false);
     if (_streamConversationId != null) {
       _logStream('ngắt stream, conversation $_streamConversationId');
     }
@@ -237,7 +288,10 @@ class AuthenCubit extends Cubit<AuthenState> {
       content: text,
       timestamp: DateTime.now(),
     );
+    // clear() does not fire onChanged, so stop typing here
     chatController.clear();
+    _logTyping('gửi tin nhắn');
+    _setTyping(false);
     _emitMessages([...messages, pending]);
 
     try {

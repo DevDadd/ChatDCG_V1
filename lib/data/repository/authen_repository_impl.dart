@@ -127,6 +127,26 @@ class AuthenRepositoryImpl implements AuthenRepository {
   }
 
   @override
+  Future<void> sentTypingStatus(
+    int conversationid,
+    bool isTyping,
+    int userId,
+  ) async {
+    try {
+      await _grpc.chat.sendTypingStatus(
+        pb.SendTypingStatusRequest(
+          conversationId: Int64(conversationid),
+          isTyping: isTyping,
+          userId: Int64(userId),
+        ),
+        options: _options,
+      );
+    } on GrpcError catch (e) {
+      throw AuthException(_message(e), statusCode: e.code);
+    }
+  }
+
+  @override
   Stream<Message> streamMessages(int conversationid) => _grpc.chat
       .streamMessages(
         pb.StreamMessagesRequest(conversationId: Int64(conversationid)),
