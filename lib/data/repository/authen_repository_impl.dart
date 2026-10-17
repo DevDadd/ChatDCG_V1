@@ -1,6 +1,8 @@
 import 'package:chatdcg_demo/data/gRPC/gRPC_client.dart';
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
+import 'package:chatdcg_demo/data/models/send_message_request.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:chatdcg_demo/di.dart';
 import 'package:chatdcg_demo/domain/exceptions/auth_exception.dart';
@@ -99,6 +101,31 @@ class AuthenRepositoryImpl implements AuthenRepository {
     }
   }
 
+  @override
+  Future<MessageBaseResponse> sendMessage(SendMessageRequest request) async {
+    try {
+      final res = await _grpc.chat.sendMessage(
+        pb.SendMessageRequest(
+          conversationId: _int64(request.conversationId),
+          // 0 = server dùng user đang đăng nhập (x-user-id) / giờ server
+          senderId: _int64(request.senderId),
+          content: request.content ?? '',
+          clientTimestampMs: _int64(request.clientTimestampMs),
+        ),
+        options: _options,
+      );
+      return MessageBaseResponse(
+        success: res.success,
+        message: res.message,
+        messageId: res.messageId.toString(),
+      );
+    } on GrpcError catch (e) {
+      throw AuthException(_message(e), statusCode: e.code);
+    }
+  }
+
+  Int64 _int64(String? value) => Int64.tryParseInt(value ?? '') ?? Int64.ZERO;
+
   Future<AuthResponse> _guard(Future<pb.AuthResponse> Function() call) async {
     try {
       final user = (await call()).user;
@@ -120,6 +147,8 @@ class AuthenRepositoryImpl implements AuthenRepository {
     StatusCode.unauthenticated => 'Sai tài khoản hoặc mật khẩu',
     StatusCode.alreadyExists => 'Tài khoản đã tồn tại',
     StatusCode.invalidArgument => e.message ?? 'Thông tin không hợp lệ',
+    StatusCode.notFound => 'Không tìm thấy cuộc trò chuyện',
+    StatusCode.permissionDenied => 'Không có quyền gửi thay người khác',
     StatusCode.deadlineExceeded => 'Máy chủ phản hồi quá lâu, vui lòng thử lại',
     StatusCode.unavailable => 'Không kết nối được tới máy chủ',
     _ => 'Có lỗi xảy ra (${e.codeName})',

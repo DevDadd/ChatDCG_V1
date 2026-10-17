@@ -160,6 +160,13 @@ class _ChatPageState extends State<ChatPage> {
                               children: [
                                 Expanded(
                                   child: TextField(
+                                    textInputAction: TextInputAction.send,
+                                    // Keeps the keyboard open after sending
+                                    onEditingComplete: () =>
+                                        context.read<AuthenCubit>().sendMessage(),
+                                    controller: context
+                                        .read<AuthenCubit>()
+                                        .chatController,
                                     style: GoogleFonts.inter(
                                       fontSize: 15,
                                       color: Colors.white,

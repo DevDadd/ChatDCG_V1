@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/message_history.dart';
+import 'package:chatdcg_demo/data/models/send_message_request.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:chatdcg_demo/di.dart';
 import 'package:chatdcg_demo/domain/exceptions/auth_exception.dart';
@@ -13,6 +15,7 @@ class AuthenCubit extends Cubit<AuthenState> {
   AuthenCubit() : super(const AuthenState());
   final TextEditingController accountController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController chatController = TextEditingController();
   final AuthenRepository _repository = getIt<AuthenRepository>();
 
   StreamSubscription<UserStatus>? _presence;
@@ -137,6 +140,69 @@ class AuthenCubit extends Cubit<AuthenState> {
     }
   }
 
+  Future<void> sendMessage() async {
+    final text = chatController.text.trim();
+    final messages = state.history?.messages ?? [];
+    if (text.isEmpty) return;
+
+    // No RPC creates a conversation yet: the id only comes from the history
+    final conversationId = messages
+        .map((m) => m.conversationId)
+        .firstWhere((id) => id != null, orElse: () => null);
+    if (conversationId == null) {
+      emit(
+        state.copyWith(errorMessage: 'Chưa có cuộc trò chuyện với người này'),
+      );
+      return;
+    }
+
+    final pending = Message(
+      conversationId: conversationId,
+      senderId: state.user?.id,
+      senderName: state.user?.displayName,
+      content: text,
+      timestamp: DateTime.now(),
+    );
+    chatController.clear();
+    _emitMessages([...messages, pending]);
+
+    try {
+      final response = await _repository.sendMessage(
+        SendMessageRequest(
+          conversationId: conversationId.toString(),
+          senderId: state.user?.id.toString(),
+          content: text,
+          clientTimestampMs: pending.timestamp!.millisecondsSinceEpoch
+              .toString(),
+        ),
+      );
+      pending.messageId = int.tryParse(response.messageId ?? '');
+    } on AuthException catch (e) {
+      _removeMessage(pending, text, e.message);
+    } catch (_) {
+      _removeMessage(pending, text, 'Gửi tin nhắn thất bại, vui lòng thử lại');
+    }
+  }
+
+  void _emitMessages(List<Message> messages) {
+    emit(
+      state.copyWith(
+        history: MessageHistoryDto(
+          messages: messages,
+          totalCount: messages.length,
+        ),
+        errorMessage: null,
+      ),
+    );
+  }
+
+  void _removeMessage(Message pending, String text, String error) {
+    final messages = [...?state.history?.messages]..remove(pending);
+    _emitMessages(messages);
+    if (chatController.text.isEmpty) chatController.text = text;
+    emit(state.copyWith(errorMessage: error));
+  }
+
   void _startPresence() {
     _presence?.cancel();
     _presence = _repository.presence().listen(
@@ -190,6 +256,7 @@ class AuthenCubit extends Cubit<AuthenState> {
     _presence?.cancel();
     accountController.dispose();
     passwordController.dispose();
+    chatController.dispose();
     return super.close();
   }
 }
