@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chatdcg_demo/data/gRPC/gRPC_client.dart';
 import 'package:chatdcg_demo/data/models/auth_models.dart';
 import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
@@ -123,6 +125,13 @@ class AuthenRepositoryImpl implements AuthenRepository {
       throw AuthException(_message(e), statusCode: e.code);
     }
   }
+
+  @override
+  Stream<Message> streamMessages(int conversationid) => _grpc.chat
+      .streamMessages(
+        pb.StreamMessagesRequest(conversationId: Int64(conversationid)),
+      )
+      .map(_map);
 
   Int64 _int64(String? value) => Int64.tryParseInt(value ?? '') ?? Int64.ZERO;
 

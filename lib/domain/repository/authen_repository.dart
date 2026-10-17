@@ -12,6 +12,7 @@ abstract class AuthenRepository {
   /// Messages with [otherUserId], oldest first. Empty if the two never chatted.
   Future<MessageHistoryDto> getHistory(int otherUserId);
   Future<MessageBaseResponse> sendMessage(SendMessageRequest request);
+  Stream<Message> streamMessages(int conversationid);
 
   /// Online/offline changes of other users. The caller counts as online
   /// while this stream is open.

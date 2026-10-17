@@ -17,8 +17,82 @@ class AuthenCubit extends Cubit<AuthenState> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController chatController = TextEditingController();
   final AuthenRepository _repository = getIt<AuthenRepository>();
+  StreamSubscription<Message>? _messageStream;
+  int? _streamConversationId;
 
   StreamSubscription<UserStatus>? _presence;
+
+  void startMessageStream(int conversationId) {
+    _streamConversationId = conversationId;
+    _listenMessages(conversationId);
+  }
+
+  void _listenMessages(int conversationId) {
+    _messageStream?.cancel();
+    _logStream('mở stream, conversation $conversationId');
+    _messageStream = _repository
+        .streamMessages(conversationId)
+        .listen(
+          _onMessage,
+          onError: (Object e) {
+            _logStream('lỗi, conversation $conversationId: $e');
+            _restartMessageStream(conversationId);
+          },
+          onDone: () {
+            _logStream('server đóng stream, conversation $conversationId');
+            _restartMessageStream(conversationId);
+          },
+        );
+  }
+
+  // debugPrint (not dart:developer log) so it also shows in release builds:
+  // adb logcat -s flutter
+  void _logStream(String text) => debugPrint('[MessageStream] $text');
+
+  void _restartMessageStream(int conversationId) {
+    _messageStream?.cancel();
+    _messageStream = null;
+    _logStream('kết nối lại sau 2s, conversation $conversationId');
+    Future.delayed(const Duration(seconds: 2), () {
+      // Đã rời màn chat / mở chat khác / đã kết nối lại rồi
+      if (isClosed ||
+          _streamConversationId != conversationId ||
+          _messageStream != null) {
+        _logStream('bỏ kết nối lại, conversation $conversationId');
+        return;
+      }
+      _listenMessages(conversationId);
+    });
+  }
+
+  void stopMessageStream() {
+    if (_streamConversationId != null) {
+      _logStream('ngắt stream, conversation $_streamConversationId');
+    }
+    _streamConversationId = null;
+    _messageStream?.cancel();
+    _messageStream = null;
+  }
+
+  void _onMessage(Message message) {
+    _logStream(
+      'nhận tin #${message.messageId} từ ${message.senderName} '
+      '(${message.senderId}), conversation ${message.conversationId}: '
+      '${message.content}',
+    );
+    if (message.conversationId != _streamConversationId) {
+      _logStream('bỏ qua: không phải conversation đang mở');
+      return;
+    }
+
+    final messages = state.history?.messages ?? [];
+    if (messages.any((m) => m.messageId == message.messageId)) {
+      _logStream('bỏ qua: tin #${message.messageId} đã có');
+      return;
+    }
+
+    _emitMessages([...messages, message]);
+  }
 
   Future<bool> login() async {
     if (state.isLoading) return false;
@@ -246,6 +320,7 @@ class AuthenCubit extends Cubit<AuthenState> {
   }
 
   void logout() {
+    stopMessageStream();
     _presence?.cancel();
     _presence = null;
     emit(const AuthenState());
@@ -253,6 +328,7 @@ class AuthenCubit extends Cubit<AuthenState> {
 
   @override
   Future<void> close() {
+    stopMessageStream();
     _presence?.cancel();
     accountController.dispose();
     passwordController.dispose();

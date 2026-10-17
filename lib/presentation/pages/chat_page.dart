@@ -26,14 +26,28 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  late final AuthenCubit _cubit = context.read<AuthenCubit>();
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    final cubit = context.read<AuthenCubit>();
-    cubit.getHistory(widget.id).then((_) {
-      log(jsonEncode(cubit.state.history), name: 'ChatPage');
+    _cubit.getHistory(widget.id).then((_) {
+      log(jsonEncode(_cubit.state.history), name: 'ChatPage');
+      // Empty history = never chatted, so there is no conversation id yet
+      final messages = _cubit.state.history?.messages ?? [];
+      final conversationId = messages.isEmpty
+          ? null
+          : messages.first.conversationId;
+      if (mounted && conversationId != null) {
+        _cubit.startMessageStream(conversationId);
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _cubit.stopMessageStream();
+    super.dispose();
   }
 
   @override
@@ -88,11 +102,22 @@ class _ChatPageState extends State<ChatPage> {
                 color: Colors.white,
               ),
             ),
-            Text(
-              widget.isOnline ? "Online" : "Offline",
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: widget.isOnline ? Colors.lightBlue : Colors.grey,
+            // Presence events update state.userStatus, so read it live;
+            // widget.isOnline is only the value when the page was opened
+            BlocSelector<AuthenCubit, AuthenState, bool>(
+              selector: (state) {
+                final users = state.userStatus?.users ?? [];
+                final user = users.where((u) => u.userId == widget.id);
+                return user.isEmpty
+                    ? widget.isOnline
+                    : user.first.isOnline ?? false;
+              },
+              builder: (context, isOnline) => Text(
+                isOnline ? "Online" : "Offline",
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  color: isOnline ? Colors.lightBlue : Colors.grey,
+                ),
               ),
             ),
           ],
