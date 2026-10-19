@@ -4,7 +4,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ListItemWidget extends StatelessWidget {
-  const ListItemWidget({super.key});
+  const ListItemWidget({
+    super.key,
+    required this.name,
+    required this.lastMessage,
+    required this.noti,
+    required this.time,
+  });
+
+  final String name;
+  final String lastMessage;
+  final String time;
+  final int noti;
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +39,11 @@ class ListItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Group Title",
+                name,
                 style: GoogleFonts.inter(color: Colors.white, fontSize: 16),
               ),
               Text(
-                "Last message preview",
+                "previous messages",
                 style: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
               ),
             ],
@@ -43,7 +54,7 @@ class ListItemWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                "12:34 PM",
+                time,
                 style: GoogleFonts.inter(color: Colors.grey, fontSize: 12),
               ),
               SizedBox(height: 4.h),
@@ -56,7 +67,7 @@ class ListItemWidget extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    "3",
+                    noti.toString(),
                     style: GoogleFonts.inter(color: Colors.black, fontSize: 12),
                   ),
                 ),

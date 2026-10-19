@@ -148,15 +148,16 @@ final $typed_data.Uint8List getUsersStatusResponseDescriptor =
 const GetConversationHistoryRequest$json = {
   '1': 'GetConversationHistoryRequest',
   '2': [
-    {'1': 'other_user_id', '3': 1, '4': 1, '5': 3, '10': 'otherUserId'},
+    {'1': 'conversation_id', '3': 1, '4': 1, '5': 3, '10': 'conversationId'},
+    {'1': 'other_user_id', '3': 2, '4': 1, '5': 3, '10': 'otherUserId'},
   ],
 };
 
 /// Descriptor for `GetConversationHistoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getConversationHistoryRequestDescriptor =
     $convert.base64Decode(
-        'Ch1HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVxdWVzdBIiCg1vdGhlcl91c2VyX2lkGAEgASgDUg'
-        'tvdGhlclVzZXJJZA==');
+        'Ch1HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVxdWVzdBInCg9jb252ZXJzYXRpb25faWQYASABKA'
+        'NSDmNvbnZlcnNhdGlvbklkEiIKDW90aGVyX3VzZXJfaWQYAiABKANSC290aGVyVXNlcklk');
 
 @$core.Deprecated('Use getConversationHistoryResponseDescriptor instead')
 const GetConversationHistoryResponse$json = {
@@ -171,6 +172,7 @@ const GetConversationHistoryResponse$json = {
       '10': 'messages'
     },
     {'1': 'total_count', '3': 2, '4': 1, '5': 5, '10': 'totalCount'},
+    {'1': 'conversation_id', '3': 3, '4': 1, '5': 3, '10': 'conversationId'},
   ],
 };
 
@@ -179,7 +181,97 @@ final $typed_data.Uint8List getConversationHistoryResponseDescriptor =
     $convert.base64Decode(
         'Ch5HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVzcG9uc2USLQoIbWVzc2FnZXMYASADKAsyES5jaG'
         'F0LkNoYXRNZXNzYWdlUghtZXNzYWdlcxIfCgt0b3RhbF9jb3VudBgCIAEoBVIKdG90YWxDb3Vu'
-        'dA==');
+        'dBInCg9jb252ZXJzYXRpb25faWQYAyABKANSDmNvbnZlcnNhdGlvbklk');
+
+@$core.Deprecated('Use createConversationRequestDescriptor instead')
+const CreateConversationRequest$json = {
+  '1': 'CreateConversationRequest',
+  '2': [
+    {'1': 'other_user_id', '3': 1, '4': 1, '5': 3, '10': 'otherUserId'},
+  ],
+};
+
+/// Descriptor for `CreateConversationRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List createConversationRequestDescriptor =
+    $convert.base64Decode(
+        'ChlDcmVhdGVDb252ZXJzYXRpb25SZXF1ZXN0EiIKDW90aGVyX3VzZXJfaWQYASABKANSC290aG'
+        'VyVXNlcklk');
+
+@$core.Deprecated('Use createConversationResponseDescriptor instead')
+const CreateConversationResponse$json = {
+  '1': 'CreateConversationResponse',
+  '2': [
+    {
+      '1': 'conversation',
+      '3': 1,
+      '4': 1,
+      '5': 11,
+      '6': '.chat.ConversationInfo',
+      '10': 'conversation'
+    },
+    {'1': 'created', '3': 2, '4': 1, '5': 8, '10': 'created'},
+  ],
+};
+
+/// Descriptor for `CreateConversationResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List createConversationResponseDescriptor =
+    $convert.base64Decode(
+        'ChpDcmVhdGVDb252ZXJzYXRpb25SZXNwb25zZRI6Cgxjb252ZXJzYXRpb24YASABKAsyFi5jaG'
+        'F0LkNvbnZlcnNhdGlvbkluZm9SDGNvbnZlcnNhdGlvbhIYCgdjcmVhdGVkGAIgASgIUgdjcmVh'
+        'dGVk');
+
+@$core.Deprecated('Use getConversationsRequestDescriptor instead')
+const GetConversationsRequest$json = {
+  '1': 'GetConversationsRequest',
+};
+
+/// Descriptor for `GetConversationsRequest`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getConversationsRequestDescriptor =
+    $convert.base64Decode('ChdHZXRDb252ZXJzYXRpb25zUmVxdWVzdA==');
+
+@$core.Deprecated('Use getConversationsResponseDescriptor instead')
+const GetConversationsResponse$json = {
+  '1': 'GetConversationsResponse',
+  '2': [
+    {
+      '1': 'conversations',
+      '3': 1,
+      '4': 3,
+      '5': 11,
+      '6': '.chat.ConversationInfo',
+      '10': 'conversations'
+    },
+  ],
+};
+
+/// Descriptor for `GetConversationsResponse`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List getConversationsResponseDescriptor =
+    $convert.base64Decode(
+        'ChhHZXRDb252ZXJzYXRpb25zUmVzcG9uc2USPAoNY29udmVyc2F0aW9ucxgBIAMoCzIWLmNoYX'
+        'QuQ29udmVyc2F0aW9uSW5mb1INY29udmVyc2F0aW9ucw==');
+
+@$core.Deprecated('Use conversationInfoDescriptor instead')
+const ConversationInfo$json = {
+  '1': 'ConversationInfo',
+  '2': [
+    {'1': 'conversation_id', '3': 1, '4': 1, '5': 3, '10': 'conversationId'},
+    {
+      '1': 'other_user',
+      '3': 2,
+      '4': 1,
+      '5': 11,
+      '6': '.chat.UserInfo',
+      '10': 'otherUser'
+    },
+    {'1': 'created_at', '3': 3, '4': 1, '5': 9, '10': 'createdAt'},
+  ],
+};
+
+/// Descriptor for `ConversationInfo`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List conversationInfoDescriptor = $convert.base64Decode(
+    'ChBDb252ZXJzYXRpb25JbmZvEicKD2NvbnZlcnNhdGlvbl9pZBgBIAEoA1IOY29udmVyc2F0aW'
+    '9uSWQSLQoKb3RoZXJfdXNlchgCIAEoCzIOLmNoYXQuVXNlckluZm9SCW90aGVyVXNlchIdCgpj'
+    'cmVhdGVkX2F0GAMgASgJUgljcmVhdGVkQXQ=');
 
 @$core.Deprecated('Use sendMessageRequestDescriptor instead')
 const SendMessageRequest$json = {

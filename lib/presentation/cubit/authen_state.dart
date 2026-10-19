@@ -1,4 +1,5 @@
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/conversation_list_dto.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/user_status.dart';
 import 'package:copy_with_extension/copy_with_extension.dart';
@@ -18,6 +19,7 @@ class AuthenState extends Equatable {
     this.history,
     this.isHistoryLoading = false,
     this.isOtherTyping = false,
+    this.conversations,
   });
 
   final AuthenStatus status;
@@ -37,6 +39,8 @@ class AuthenState extends Equatable {
   // The other person in the open chat is typing
   final bool isOtherTyping;
 
+  final ConversationListDto? conversations;
+
   bool get isLoading => status == AuthenStatus.loading;
   bool get isAuthenticated => status == AuthenStatus.authenticated;
 
@@ -49,5 +53,6 @@ class AuthenState extends Equatable {
     history,
     isHistoryLoading,
     isOtherTyping,
+    conversations,
   ];
 }

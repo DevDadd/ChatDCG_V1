@@ -485,6 +485,17 @@ class AuthenCubit extends Cubit<AuthenState> {
     }
   }
 
+  Future<void> getConversations() async {
+    try {
+      final response = await _repository.getConversation();
+      emit(state.copyWith(conversations: response));
+    } on AuthException catch (e) {
+      emit(state.copyWith(errorMessage: e.message));
+    } catch (_) {
+      emit(state.copyWith(errorMessage: 'Không tải được danh sách trò chuyện'));
+    }
+  }
+
   void _startPresence() {
     _presence?.cancel();
     _presence = _repository.presence().listen(

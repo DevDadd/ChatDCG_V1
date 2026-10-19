@@ -63,8 +63,24 @@ class _ContactsPageState extends State<ContactsPage> {
           builder: (context, state) {
             final users = state.userStatus?.users ?? [];
             return ListView.separated(
-              itemCount: users.length,
+              // 2 fixed action rows above the users
+              itemCount: users.length + 2,
               itemBuilder: (context, index) {
+                if (index == 0) {
+                  return _ContactActionItem(
+                    icon: Icons.location_on_outlined,
+                    title: "Add People Nearby",
+                    onTap: () {},
+                  );
+                }
+                if (index == 1) {
+                  return _ContactActionItem(
+                    icon: Icons.person_add_alt_outlined,
+                    title: "Invite Friends",
+                    onTap: () {},
+                  );
+                }
+                index -= 2;
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -76,7 +92,10 @@ class _ContactsPageState extends State<ContactsPage> {
                           userName: users[index].displayName ?? "",
                         ),
                       ),
-                    );
+                    ).then((_) {
+                      if (context.mounted)
+                        context.read<AuthenCubit>().getConversations();
+                    });
                   },
                   child: ListUserWidget(
                     userName: users[index].displayName ?? "",
@@ -93,6 +112,48 @@ class _ContactsPageState extends State<ContactsPage> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+/// Icon + title row; same size as ListUserWidget so the dividers line up.
+class _ContactActionItem extends StatelessWidget {
+  const _ContactActionItem({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      // Makes the empty space in the row tappable too
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        height: 50.h,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 40.h,
+              child: Icon(icon, color: Colors.white, size: 26.r),
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 17.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
         ),
       ),
     );

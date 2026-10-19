@@ -1,13 +1,28 @@
+import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
+import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
 import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
 import 'package:chatdcg_demo/presentation/pages/contacts_page.dart';
 import 'package:chatdcg_demo/presentation/widget/list_item_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<AuthenCubit>().getConversations();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,29 +95,66 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 10.h),
             Expanded(
-              child: ListView.separated(
-                itemCount: 15,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              ChatPage(id: 1, isOnline: true, userName: "Hi"),
+              child: BlocBuilder<AuthenCubit, AuthenState>(
+                buildWhen: (previous, current) =>
+                    previous.conversations != current.conversations ||
+                    previous.userStatus != current.userStatus,
+                builder: (context, state) {
+                  final conversations =
+                      state.conversations?.conversations ?? [];
+                  return ListView.separated(
+                    itemCount: conversations.length,
+                    itemBuilder: (context, index) {
+                      final conversation = conversations[index];
+                      final otherUser = conversation.otherUser;
+                      final otherUserId =
+                          int.tryParse(otherUser?.id ?? '') ?? 0;
+                      // ConversationInfo has no presence: look it up in GetUsersStatus
+                      final isOnline =
+                          state.userStatus?.users
+                              ?.where((u) => u.userId == otherUserId)
+                              .firstOrNull
+                              ?.isOnline ??
+                          false;
+                      final createdAt = conversation.createdAt;
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                id: otherUserId,
+                                isOnline: isOnline,
+                                userName: otherUser?.displayName ?? "",
+                              ),
+                            ),
+                            // Chat may have created a new conversation: reload
+                          ).then((_) {
+                            if (context.mounted) {
+                              context.read<AuthenCubit>().getConversations();
+                            }
+                          });
+                        },
+                        child: ListItemWidget(
+                          name: otherUser?.displayName ?? "",
+                          lastMessage: "",
+                          noti: 0,
+                          time: createdAt == null
+                              ? ""
+                              : "${createdAt.hour.toString().padLeft(2, '0')}:"
+                                    "${createdAt.minute.toString().padLeft(2, '0')}",
                         ),
                       );
                     },
-                    child: ListItemWidget(),
+                    // Starts past the 60.r avatar so the line only spans the text area
+                    separatorBuilder: (context, index) => Divider(
+                      indent: 60.r + 12.w,
+                      height: 1,
+                      thickness: 0.2,
+                      color: Colors.grey.shade800,
+                    ),
                   );
                 },
-                // Starts past the 60.r avatar so the line only spans the text area
-                separatorBuilder: (context, index) => Divider(
-                  indent: 60.r + 12.w,
-                  height: 1,
-                  thickness: 0.2,
-                  color: Colors.grey.shade800,
-                ),
               ),
             ),
           ],

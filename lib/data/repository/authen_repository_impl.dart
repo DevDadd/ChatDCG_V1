@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chatdcg_demo/data/gRPC/gRPC_client.dart';
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/conversation_list_dto.dart';
 import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
@@ -178,6 +179,34 @@ class AuthenRepositoryImpl implements AuthenRepository {
         receivedCount: res.receivedCount,
         failedCount: res.failedCount,
         message: res.message,
+      );
+    } on GrpcError catch (e) {
+      throw AuthException(_message(e), statusCode: e.code);
+    }
+  }
+
+  @override
+  Future<ConversationListDto> getConversation() async {
+    try {
+      final res = await _grpc.chat.getConversations(
+        pb.GetConversationsRequest(),
+        options: _options,
+      );
+      return ConversationListDto(
+        conversations: res.conversations
+            .map(
+              (c) => Conversation(
+                conversationId: c.conversationId.toString(),
+                createdAt: DateTime.tryParse(c.createdAt)?.toLocal(), // UTC
+                otherUser: OtherUser(
+                  id: c.otherUser.id.toString(),
+                  account: c.otherUser.account,
+                  username: c.otherUser.username,
+                  displayName: c.otherUser.displayName,
+                ),
+              ),
+            )
+            .toList(),
       );
     } on GrpcError catch (e) {
       throw AuthException(_message(e), statusCode: e.code);

@@ -5,8 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Label turns light blue while its TextField has focus
-final _labelStyle = WidgetStateTextStyle.resolveWith(
+// Label turns light blue while its TextField has focus. A getter, not a final:
+// hot reload keeps the old value of a top-level final
+TextStyle get _labelStyle => WidgetStateTextStyle.resolveWith(
   (states) => GoogleFonts.inter(
     color: states.contains(WidgetState.focused)
         ? Colors.lightBlue
@@ -63,6 +64,8 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                 labelText: "Username",
                 labelStyle: _labelStyle,
+                // Floating (focused) label otherwise takes the theme's purple
+                floatingLabelStyle: _labelStyle,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey),
@@ -82,6 +85,7 @@ class _LoginPageState extends State<LoginPage> {
               decoration: InputDecoration(
                 labelText: "Password",
                 labelStyle: _labelStyle,
+                floatingLabelStyle: _labelStyle,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.grey),

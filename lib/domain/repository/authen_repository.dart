@@ -1,4 +1,5 @@
 import 'package:chatdcg_demo/data/models/auth_models.dart';
+import 'package:chatdcg_demo/data/models/conversation_list_dto.dart';
 import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
@@ -18,6 +19,7 @@ abstract class AuthenRepository {
   Future<void> sentTypingStatus(int conversationid, bool isTyping, int userId);
   Stream<TypingStreamDto> streamTypingStatus(int conversationid, int userid);
   Future<SyncMessageResponse> syncMessages(List<SendMessageRequest> requests);
+  Future<ConversationListDto> getConversation();
 
   /// Online/offline changes of other users. The caller counts as online
   /// while this stream is open.

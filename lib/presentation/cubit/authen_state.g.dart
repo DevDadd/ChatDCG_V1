@@ -21,6 +21,8 @@ abstract class _$AuthenStateCWProxy {
 
   AuthenState isOtherTyping(bool isOtherTyping);
 
+  AuthenState conversations(ConversationListDto? conversations);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -37,6 +39,7 @@ abstract class _$AuthenStateCWProxy {
     MessageHistoryDto? history,
     bool isHistoryLoading,
     bool isOtherTyping,
+    ConversationListDto? conversations,
   });
 }
 
@@ -72,6 +75,10 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
   AuthenState isOtherTyping(bool isOtherTyping) =>
       call(isOtherTyping: isOtherTyping);
 
+  @override
+  AuthenState conversations(ConversationListDto? conversations) =>
+      call(conversations: conversations);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -89,6 +96,7 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
     Object? history = const $CopyWithPlaceholder(),
     Object? isHistoryLoading = const $CopyWithPlaceholder(),
     Object? isOtherTyping = const $CopyWithPlaceholder(),
+    Object? conversations = const $CopyWithPlaceholder(),
   }) {
     return AuthenState(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -122,6 +130,10 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
           ? _value.isOtherTyping
           // ignore: cast_nullable_to_non_nullable
           : isOtherTyping as bool,
+      conversations: conversations == const $CopyWithPlaceholder()
+          ? _value.conversations
+          // ignore: cast_nullable_to_non_nullable
+          : conversations as ConversationListDto?,
     );
   }
 }

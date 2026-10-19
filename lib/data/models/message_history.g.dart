@@ -29,6 +29,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
   timestamp: json['timestamp'] == null
       ? null
       : DateTime.parse(json['timestamp'] as String),
+  isOffline: json['isOffline'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -38,4 +39,5 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
   'sender_name': instance.senderName,
   'content': instance.content,
   'timestamp': instance.timestamp?.toIso8601String(),
+  'isOffline': instance.isOffline,
 };
