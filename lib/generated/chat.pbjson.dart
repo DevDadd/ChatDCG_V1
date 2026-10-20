@@ -75,6 +75,7 @@ const UserInfo$json = {
     {'1': 'account', '3': 2, '4': 1, '5': 9, '10': 'account'},
     {'1': 'username', '3': 3, '4': 1, '5': 9, '10': 'username'},
     {'1': 'display_name', '3': 4, '4': 1, '5': 9, '10': 'displayName'},
+    {'1': 'avatar_url', '3': 5, '4': 1, '5': 9, '10': 'avatarUrl'},
   ],
 };
 
@@ -82,7 +83,7 @@ const UserInfo$json = {
 final $typed_data.Uint8List userInfoDescriptor = $convert.base64Decode(
     'CghVc2VySW5mbxIOCgJpZBgBIAEoA1ICaWQSGAoHYWNjb3VudBgCIAEoCVIHYWNjb3VudBIaCg'
     'h1c2VybmFtZRgDIAEoCVIIdXNlcm5hbWUSIQoMZGlzcGxheV9uYW1lGAQgASgJUgtkaXNwbGF5'
-    'TmFtZQ==');
+    'TmFtZRIdCgphdmF0YXJfdXJsGAUgASgJUglhdmF0YXJVcmw=');
 
 @$core.Deprecated('Use authResponseDescriptor instead')
 const AuthResponse$json = {
@@ -114,6 +115,7 @@ const UserStatus$json = {
     {'1': 'display_name', '3': 3, '4': 1, '5': 9, '10': 'displayName'},
     {'1': 'is_online', '3': 4, '4': 1, '5': 8, '10': 'isOnline'},
     {'1': 'last_seen', '3': 5, '4': 1, '5': 9, '10': 'lastSeen'},
+    {'1': 'avatar_url', '3': 6, '4': 1, '5': 9, '10': 'avatarUrl'},
   ],
 };
 
@@ -121,7 +123,8 @@ const UserStatus$json = {
 final $typed_data.Uint8List userStatusDescriptor = $convert.base64Decode(
     'CgpVc2VyU3RhdHVzEhcKB3VzZXJfaWQYASABKANSBnVzZXJJZBIaCgh1c2VybmFtZRgCIAEoCV'
     'IIdXNlcm5hbWUSIQoMZGlzcGxheV9uYW1lGAMgASgJUgtkaXNwbGF5TmFtZRIbCglpc19vbmxp'
-    'bmUYBCABKAhSCGlzT25saW5lEhsKCWxhc3Rfc2VlbhgFIAEoCVIIbGFzdFNlZW4=');
+    'bmUYBCABKAhSCGlzT25saW5lEhsKCWxhc3Rfc2VlbhgFIAEoCVIIbGFzdFNlZW4SHQoKYXZhdG'
+    'FyX3VybBgGIAEoCVIJYXZhdGFyVXJs');
 
 @$core.Deprecated('Use getUsersStatusResponseDescriptor instead')
 const GetUsersStatusResponse$json = {
@@ -148,16 +151,16 @@ final $typed_data.Uint8List getUsersStatusResponseDescriptor =
 const GetConversationHistoryRequest$json = {
   '1': 'GetConversationHistoryRequest',
   '2': [
-    {'1': 'conversation_id', '3': 1, '4': 1, '5': 3, '10': 'conversationId'},
-    {'1': 'other_user_id', '3': 2, '4': 1, '5': 3, '10': 'otherUserId'},
+    {'1': 'other_user_id', '3': 1, '4': 1, '5': 3, '10': 'otherUserId'},
+    {'1': 'conversation_id', '3': 2, '4': 1, '5': 3, '10': 'conversationId'},
   ],
 };
 
 /// Descriptor for `GetConversationHistoryRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List getConversationHistoryRequestDescriptor =
     $convert.base64Decode(
-        'Ch1HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVxdWVzdBInCg9jb252ZXJzYXRpb25faWQYASABKA'
-        'NSDmNvbnZlcnNhdGlvbklkEiIKDW90aGVyX3VzZXJfaWQYAiABKANSC290aGVyVXNlcklk');
+        'Ch1HZXRDb252ZXJzYXRpb25IaXN0b3J5UmVxdWVzdBIiCg1vdGhlcl91c2VyX2lkGAEgASgDUg'
+        'tvdGhlclVzZXJJZBInCg9jb252ZXJzYXRpb25faWQYAiABKANSDmNvbnZlcnNhdGlvbklk');
 
 @$core.Deprecated('Use getConversationHistoryResponseDescriptor instead')
 const GetConversationHistoryResponse$json = {

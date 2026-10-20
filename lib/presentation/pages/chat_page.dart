@@ -34,11 +34,8 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     _cubit.getHistory(widget.id).then((_) {
       log(jsonEncode(_cubit.state.history), name: 'ChatPage');
-      // Empty history = never chatted, so there is no conversation id yet
-      final messages = _cubit.state.history?.messages ?? [];
-      final conversationId = messages.isEmpty
-          ? null
-          : messages.first.conversationId;
+      // Comes with the history even when it is empty (new conversation)
+      final conversationId = _cubit.state.history?.conversationId;
       if (mounted && conversationId != null) {
         _cubit.startMessageStream(conversationId);
       }

@@ -284,12 +284,14 @@ class UserInfo extends $pb.GeneratedMessage {
     $core.String? account,
     $core.String? username,
     $core.String? displayName,
+    $core.String? avatarUrl,
   }) {
     final result = UserInfo._();
     if (id != null) result.id = id;
     if (account != null) result.account = account;
     if (username != null) result.username = username;
     if (displayName != null) result.displayName = displayName;
+    if (avatarUrl != null) result.avatarUrl = avatarUrl;
     return result;
   }
 
@@ -310,6 +312,7 @@ class UserInfo extends $pb.GeneratedMessage {
     ..aOS(2, _omitFieldNames ? '' : 'account')
     ..aOS(3, _omitFieldNames ? '' : 'username')
     ..aOS(4, _omitFieldNames ? '' : 'displayName')
+    ..aOS(5, _omitFieldNames ? '' : 'avatarUrl')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -367,6 +370,15 @@ class UserInfo extends $pb.GeneratedMessage {
   $core.bool hasDisplayName() => $_has(3);
   @$pb.TagNumber(4)
   void clearDisplayName() => $_clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.String get avatarUrl => $_getSZ(4);
+  @$pb.TagNumber(5)
+  set avatarUrl($core.String value) => $_setString(4, value);
+  @$pb.TagNumber(5)
+  $core.bool hasAvatarUrl() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearAvatarUrl() => $_clearField(5);
 }
 
 class AuthResponse extends $pb.GeneratedMessage {
@@ -479,6 +491,7 @@ class UserStatus extends $pb.GeneratedMessage {
     $core.String? displayName,
     $core.bool? isOnline,
     $core.String? lastSeen,
+    $core.String? avatarUrl,
   }) {
     final result = UserStatus._();
     if (userId != null) result.userId = userId;
@@ -486,6 +499,7 @@ class UserStatus extends $pb.GeneratedMessage {
     if (displayName != null) result.displayName = displayName;
     if (isOnline != null) result.isOnline = isOnline;
     if (lastSeen != null) result.lastSeen = lastSeen;
+    if (avatarUrl != null) result.avatarUrl = avatarUrl;
     return result;
   }
 
@@ -507,6 +521,7 @@ class UserStatus extends $pb.GeneratedMessage {
     ..aOS(3, _omitFieldNames ? '' : 'displayName')
     ..aOB(4, _omitFieldNames ? '' : 'isOnline')
     ..aOS(5, _omitFieldNames ? '' : 'lastSeen')
+    ..aOS(6, _omitFieldNames ? '' : 'avatarUrl')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -573,6 +588,15 @@ class UserStatus extends $pb.GeneratedMessage {
   $core.bool hasLastSeen() => $_has(4);
   @$pb.TagNumber(5)
   void clearLastSeen() => $_clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.String get avatarUrl => $_getSZ(5);
+  @$pb.TagNumber(6)
+  set avatarUrl($core.String value) => $_setString(5, value);
+  @$pb.TagNumber(6)
+  $core.bool hasAvatarUrl() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearAvatarUrl() => $_clearField(6);
 }
 
 class GetUsersStatusResponse extends $pb.GeneratedMessage {
@@ -631,12 +655,12 @@ class GetUsersStatusResponse extends $pb.GeneratedMessage {
 
 class GetConversationHistoryRequest extends $pb.GeneratedMessage {
   factory GetConversationHistoryRequest({
-    $fixnum.Int64? conversationId,
     $fixnum.Int64? otherUserId,
+    $fixnum.Int64? conversationId,
   }) {
     final result = GetConversationHistoryRequest._();
-    if (conversationId != null) result.conversationId = conversationId;
     if (otherUserId != null) result.otherUserId = otherUserId;
+    if (conversationId != null) result.conversationId = conversationId;
     return result;
   }
 
@@ -653,8 +677,8 @@ class GetConversationHistoryRequest extends $pb.GeneratedMessage {
       _omitMessageNames ? '' : 'GetConversationHistoryRequest',
       package: const $pb.PackageName(_omitMessageNames ? '' : 'chat'),
       createEmptyInstance: GetConversationHistoryRequest.$_createMessage)
-    ..aInt64(1, _omitFieldNames ? '' : 'conversationId')
-    ..aInt64(2, _omitFieldNames ? '' : 'otherUserId')
+    ..aInt64(1, _omitFieldNames ? '' : 'otherUserId')
+    ..aInt64(2, _omitFieldNames ? '' : 'conversationId')
     ..hasRequiredFields = false;
 
   @$core.Deprecated('See https://github.com/google/protobuf.dart/issues/998.')
@@ -686,22 +710,22 @@ class GetConversationHistoryRequest extends $pb.GeneratedMessage {
   static GetConversationHistoryRequest? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $fixnum.Int64 get conversationId => $_getI64(0);
+  $fixnum.Int64 get otherUserId => $_getI64(0);
   @$pb.TagNumber(1)
-  set conversationId($fixnum.Int64 value) => $_setInt64(0, value);
+  set otherUserId($fixnum.Int64 value) => $_setInt64(0, value);
   @$pb.TagNumber(1)
-  $core.bool hasConversationId() => $_has(0);
+  $core.bool hasOtherUserId() => $_has(0);
   @$pb.TagNumber(1)
-  void clearConversationId() => $_clearField(1);
+  void clearOtherUserId() => $_clearField(1);
 
   @$pb.TagNumber(2)
-  $fixnum.Int64 get otherUserId => $_getI64(1);
+  $fixnum.Int64 get conversationId => $_getI64(1);
   @$pb.TagNumber(2)
-  set otherUserId($fixnum.Int64 value) => $_setInt64(1, value);
+  set conversationId($fixnum.Int64 value) => $_setInt64(1, value);
   @$pb.TagNumber(2)
-  $core.bool hasOtherUserId() => $_has(1);
+  $core.bool hasConversationId() => $_has(1);
   @$pb.TagNumber(2)
-  void clearOtherUserId() => $_clearField(2);
+  void clearConversationId() => $_clearField(2);
 }
 
 class GetConversationHistoryResponse extends $pb.GeneratedMessage {

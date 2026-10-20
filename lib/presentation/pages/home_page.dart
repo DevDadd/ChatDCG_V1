@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
 import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
 import 'package:chatdcg_demo/presentation/pages/contacts_page.dart';
+import 'package:chatdcg_demo/presentation/widget/liquid_button.dart';
 import 'package:chatdcg_demo/presentation/widget/list_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +27,13 @@ class _HomePageState extends State<HomePage> {
     context.read<AuthenCubit>().getConversations();
   }
 
+  void _openContacts() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ContactsPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,23 +49,30 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         centerTitle: true,
-        leadingWidth: 72,
-        leading: TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ContactsPage()),
-            );
-          },
-          child: Text(
-            "Edit",
-            style: GoogleFonts.inter(
-              color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        // Wider on iOS so "Edit" fits beside the glass button's side padding
+        leadingWidth: Platform.isIOS ? 88 : 72,
+        leading: Platform.isIOS
+            ? Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Center(
+                  child: LiquidButton(
+                    label: "Edit",
+                    height: 36,
+                    onPressed: _openContacts,
+                  ),
+                ),
+              )
+            : TextButton(
+                onPressed: _openContacts,
+                child: Text(
+                  "Edit",
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
         actions: [
           IconButton(
             onPressed: () {},

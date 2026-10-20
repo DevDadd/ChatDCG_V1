@@ -12,7 +12,8 @@ abstract class AuthenRepository {
   Future<AuthResponse> register(RegisterRequest request);
   Future<UserStatusDto> getUserStatus();
 
-  /// Messages with [otherUserId], oldest first. Empty if the two never chatted.
+  /// Messages with [otherUserId], oldest first. Empty if the two never chatted;
+  /// the server then creates the conversation and returns its id.
   Future<MessageHistoryDto> getHistory(int otherUserId);
   Future<MessageBaseResponse> sendMessage(SendMessageRequest request);
   Stream<Message> streamMessages(int conversationid);

@@ -8,8 +8,10 @@ class MessageHistoryDto {
   List<Message>? messages;
   @JsonKey(name: "total_count")
   int? totalCount;
+  @JsonKey(name: "conversation_id")
+  int? conversationId;
 
-  MessageHistoryDto({this.messages, this.totalCount});
+  MessageHistoryDto({this.messages, this.totalCount, this.conversationId});
 
   factory MessageHistoryDto.fromJson(Map<String, dynamic> json) =>
       _$MessageHistoryDtoFromJson(json);

@@ -100,6 +100,10 @@ class AuthenRepositoryImpl implements AuthenRepository {
       return MessageHistoryDto(
         messages: res.messages.map(_map).toList(),
         totalCount: res.totalCount,
+        // 0 = not set
+        conversationId: res.conversationId == 0
+            ? null
+            : res.conversationId.toInt(),
       );
     } on GrpcError catch (e) {
       throw AuthException(_message(e), statusCode: e.code);

@@ -1,6 +1,7 @@
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
 import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
+import 'package:chatdcg_demo/presentation/widget/liquid_button.dart';
 import 'package:chatdcg_demo/presentation/widget/list_user_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +30,10 @@ class _ContactsPageState extends State<ContactsPage> {
       backgroundColor: const Color(0x1C1C1E),
       appBar: AppBar(
         backgroundColor: const Color(0x1C1C1E),
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: LiquidButton(label: "Sort", height: 36, onPressed: () {}),
+        ),
         title: Text(
           "Contacts",
           style: GoogleFonts.inter(
@@ -38,7 +43,7 @@ class _ContactsPageState extends State<ContactsPage> {
           ),
         ),
         centerTitle: true,
-        leadingWidth: 72,
+        leadingWidth: 88,
 
         actions: [
           IconButton(

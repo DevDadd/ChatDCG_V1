@@ -12,12 +12,14 @@ MessageHistoryDto _$MessageHistoryDtoFromJson(Map<String, dynamic> json) =>
           ?.map((e) => Message.fromJson(e as Map<String, dynamic>))
           .toList(),
       totalCount: (json['total_count'] as num?)?.toInt(),
+      conversationId: (json['conversation_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$MessageHistoryDtoToJson(MessageHistoryDto instance) =>
     <String, dynamic>{
       'messages': instance.messages,
       'total_count': instance.totalCount,
+      'conversation_id': instance.conversationId,
     };
 
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(

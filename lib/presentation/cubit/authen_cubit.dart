@@ -342,10 +342,7 @@ class AuthenCubit extends Cubit<AuthenState> {
     final messages = state.history?.messages ?? [];
     if (text.isEmpty) return;
 
-    // No RPC creates a conversation yet: the id only comes from the history
-    final conversationId = messages
-        .map((m) => m.conversationId)
-        .firstWhere((id) => id != null, orElse: () => null);
+    final conversationId = state.history?.conversationId;
     if (conversationId == null) {
       emit(
         state.copyWith(errorMessage: 'Chưa có cuộc trò chuyện với người này'),
@@ -401,6 +398,7 @@ class AuthenCubit extends Cubit<AuthenState> {
         history: MessageHistoryDto(
           messages: messages,
           totalCount: messages.length,
+          conversationId: state.history?.conversationId,
         ),
         errorMessage: null,
       ),
