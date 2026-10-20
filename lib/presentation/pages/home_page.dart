@@ -5,6 +5,7 @@ import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
 import 'package:chatdcg_demo/presentation/pages/chat_page.dart';
 import 'package:chatdcg_demo/presentation/pages/contacts_page.dart';
 import 'package:chatdcg_demo/presentation/widget/liquid_button.dart';
+import 'package:chatdcg_demo/presentation/widget/liquid_icon_button.dart';
 import 'package:chatdcg_demo/presentation/widget/list_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,18 +75,30 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(
-              "assets/edit_icon.svg",
-              colorFilter: const ColorFilter.mode(
-                Colors.white,
-                BlendMode.srcIn,
+          if (Platform.isIOS)
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: LiquidIconButton(
+                sfSymbol: "square.and.pencil",
+                icon: Icons.edit_square,
+                color: Colors.white,
+                size: 36,
+                onPressed: () {},
               ),
-              width: 20.w,
-              height: 20.h,
+            )
+          else
+            IconButton(
+              onPressed: () {},
+              icon: SvgPicture.asset(
+                "assets/edit_icon.svg",
+                colorFilter: const ColorFilter.mode(
+                  Colors.white,
+                  BlendMode.srcIn,
+                ),
+                width: 20.w,
+                height: 20.h,
+              ),
             ),
-          ),
         ],
       ),
       body: Padding(

@@ -77,18 +77,24 @@ class _LiquidIconButtonState extends State<LiquidIconButton> {
       );
     }
 
-    return SizedBox.square(
-      dimension: widget.size,
-      child: UiKitView(
-        viewType: 'glass_icon_button',
-        creationParams: {
-          'symbol': widget.sfSymbol,
-          'iconSize': widget.iconSize,
-          if (widget.color != null) 'color': widget.color!.toARGB32(),
-          if (widget.tint != null) 'tint': widget.tint!.toARGB32(),
-        },
-        creationParamsCodec: const StandardMessageCodec(),
-        onPlatformViewCreated: _onCreate,
+    // widthFactor/heightFactor 1: keep the circle at its own size inside
+    // tight constraints, e.g. AppBar actions are stretched to toolbar height
+    return Center(
+      widthFactor: 1,
+      heightFactor: 1,
+      child: SizedBox.square(
+        dimension: widget.size,
+        child: UiKitView(
+          viewType: 'glass_icon_button',
+          creationParams: {
+            'symbol': widget.sfSymbol,
+            'iconSize': widget.iconSize,
+            if (widget.color != null) 'color': widget.color!.toARGB32(),
+            if (widget.tint != null) 'tint': widget.tint!.toARGB32(),
+          },
+          creationParamsCodec: const StandardMessageCodec(),
+          onPlatformViewCreated: _onCreate,
+        ),
       ),
     );
   }
