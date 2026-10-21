@@ -85,13 +85,6 @@ class ChatServiceClient extends $grpc.Client {
     return $createUnaryCall(_$getConversations, request, options: options);
   }
 
-  $grpc.ResponseFuture<$0.SendMessageResponse> sendMessage(
-    $0.SendMessageRequest request, {
-    $grpc.CallOptions? options,
-  }) {
-    return $createUnaryCall(_$sendMessage, request, options: options);
-  }
-
   $grpc.ResponseFuture<$0.SendTypingStatusResponse> sendTypingStatus(
     $0.SendTypingStatusRequest request, {
     $grpc.CallOptions? options,
@@ -105,15 +98,6 @@ class ChatServiceClient extends $grpc.Client {
   }) {
     return $createStreamingCall(
         _$subscribeTyping, $async.Stream.fromIterable([request]),
-        options: options);
-  }
-
-  $grpc.ResponseStream<$0.ChatMessage> streamMessages(
-    $0.StreamMessagesRequest request, {
-    $grpc.CallOptions? options,
-  }) {
-    return $createStreamingCall(
-        _$streamMessages, $async.Stream.fromIterable([request]),
         options: options);
   }
 
@@ -180,11 +164,6 @@ class ChatServiceClient extends $grpc.Client {
       '/chat.ChatService/GetConversations',
       ($0.GetConversationsRequest value) => value.writeToBuffer(),
       $0.GetConversationsResponse.fromBuffer);
-  static final _$sendMessage =
-      $grpc.ClientMethod<$0.SendMessageRequest, $0.SendMessageResponse>(
-          '/chat.ChatService/SendMessage',
-          ($0.SendMessageRequest value) => value.writeToBuffer(),
-          $0.SendMessageResponse.fromBuffer);
   static final _$sendTypingStatus = $grpc.ClientMethod<
           $0.SendTypingStatusRequest, $0.SendTypingStatusResponse>(
       '/chat.ChatService/SendTypingStatus',
@@ -195,11 +174,6 @@ class ChatServiceClient extends $grpc.Client {
           '/chat.ChatService/SubscribeTyping',
           ($0.SubscribeTypingRequest value) => value.writeToBuffer(),
           $0.TypingEvent.fromBuffer);
-  static final _$streamMessages =
-      $grpc.ClientMethod<$0.StreamMessagesRequest, $0.ChatMessage>(
-          '/chat.ChatService/StreamMessages',
-          ($0.StreamMessagesRequest value) => value.writeToBuffer(),
-          $0.ChatMessage.fromBuffer);
   static final _$syncMessages =
       $grpc.ClientMethod<$0.SendMessageRequest, $0.SyncMessagesResponse>(
           '/chat.ChatService/SyncMessages',
@@ -279,15 +253,6 @@ abstract class ChatServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.GetConversationsRequest.fromBuffer(value),
         ($0.GetConversationsResponse value) => value.writeToBuffer()));
-    $addMethod(
-        $grpc.ServiceMethod<$0.SendMessageRequest, $0.SendMessageResponse>(
-            'SendMessage',
-            sendMessage_Pre,
-            false,
-            false,
-            ($core.List<$core.int> value) =>
-                $0.SendMessageRequest.fromBuffer(value),
-            ($0.SendMessageResponse value) => value.writeToBuffer()));
     $addMethod($grpc.ServiceMethod<$0.SendTypingStatusRequest,
             $0.SendTypingStatusResponse>(
         'SendTypingStatus',
@@ -305,14 +270,6 @@ abstract class ChatServiceBase extends $grpc.Service {
         ($core.List<$core.int> value) =>
             $0.SubscribeTypingRequest.fromBuffer(value),
         ($0.TypingEvent value) => value.writeToBuffer()));
-    $addMethod($grpc.ServiceMethod<$0.StreamMessagesRequest, $0.ChatMessage>(
-        'StreamMessages',
-        streamMessages_Pre,
-        false,
-        true,
-        ($core.List<$core.int> value) =>
-            $0.StreamMessagesRequest.fromBuffer(value),
-        ($0.ChatMessage value) => value.writeToBuffer()));
     $addMethod(
         $grpc.ServiceMethod<$0.SendMessageRequest, $0.SyncMessagesResponse>(
             'SyncMessages',
@@ -398,14 +355,6 @@ abstract class ChatServiceBase extends $grpc.Service {
   $async.Future<$0.GetConversationsResponse> getConversations(
       $grpc.ServiceCall call, $0.GetConversationsRequest request);
 
-  $async.Future<$0.SendMessageResponse> sendMessage_Pre($grpc.ServiceCall $call,
-      $async.Future<$0.SendMessageRequest> $request) async {
-    return sendMessage($call, await $request);
-  }
-
-  $async.Future<$0.SendMessageResponse> sendMessage(
-      $grpc.ServiceCall call, $0.SendMessageRequest request);
-
   $async.Future<$0.SendTypingStatusResponse> sendTypingStatus_Pre(
       $grpc.ServiceCall $call,
       $async.Future<$0.SendTypingStatusRequest> $request) async {
@@ -422,14 +371,6 @@ abstract class ChatServiceBase extends $grpc.Service {
 
   $async.Stream<$0.TypingEvent> subscribeTyping(
       $grpc.ServiceCall call, $0.SubscribeTypingRequest request);
-
-  $async.Stream<$0.ChatMessage> streamMessages_Pre($grpc.ServiceCall $call,
-      $async.Future<$0.StreamMessagesRequest> $request) async* {
-    yield* streamMessages($call, await $request);
-  }
-
-  $async.Stream<$0.ChatMessage> streamMessages(
-      $grpc.ServiceCall call, $0.StreamMessagesRequest request);
 
   $async.Future<$0.SyncMessagesResponse> syncMessages(
       $grpc.ServiceCall call, $async.Stream<$0.SendMessageRequest> request);

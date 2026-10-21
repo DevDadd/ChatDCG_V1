@@ -299,21 +299,6 @@ final $typed_data.Uint8List sendMessageRequestDescriptor = $convert.base64Decode
     'Rpb25JZBIbCglzZW5kZXJfaWQYAiABKANSCHNlbmRlcklkEhgKB2NvbnRlbnQYAyABKAlSB2Nv'
     'bnRlbnQSLgoTY2xpZW50X3RpbWVzdGFtcF9tcxgEIAEoA1IRY2xpZW50VGltZXN0YW1wTXM=');
 
-@$core.Deprecated('Use sendMessageResponseDescriptor instead')
-const SendMessageResponse$json = {
-  '1': 'SendMessageResponse',
-  '2': [
-    {'1': 'success', '3': 1, '4': 1, '5': 8, '10': 'success'},
-    {'1': 'message', '3': 2, '4': 1, '5': 9, '10': 'message'},
-    {'1': 'message_id', '3': 3, '4': 1, '5': 3, '10': 'messageId'},
-  ],
-};
-
-/// Descriptor for `SendMessageResponse`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List sendMessageResponseDescriptor = $convert.base64Decode(
-    'ChNTZW5kTWVzc2FnZVJlc3BvbnNlEhgKB3N1Y2Nlc3MYASABKAhSB3N1Y2Nlc3MSGAoHbWVzc2'
-    'FnZRgCIAEoCVIHbWVzc2FnZRIdCgptZXNzYWdlX2lkGAMgASgDUgltZXNzYWdlSWQ=');
-
 @$core.Deprecated('Use sendTypingStatusRequestDescriptor instead')
 const SendTypingStatusRequest$json = {
   '1': 'SendTypingStatusRequest',
@@ -397,20 +382,6 @@ final $typed_data.Uint8List chatMessageDescriptor = $convert.base64Decode(
     'F0aW9uX2lkGAIgASgDUg5jb252ZXJzYXRpb25JZBIbCglzZW5kZXJfaWQYAyABKANSCHNlbmRl'
     'cklkEh8KC3NlbmRlcl9uYW1lGAQgASgJUgpzZW5kZXJOYW1lEhgKB2NvbnRlbnQYBSABKAlSB2'
     'NvbnRlbnQSHAoJdGltZXN0YW1wGAYgASgJUgl0aW1lc3RhbXA=');
-
-@$core.Deprecated('Use streamMessagesRequestDescriptor instead')
-const StreamMessagesRequest$json = {
-  '1': 'StreamMessagesRequest',
-  '2': [
-    {'1': 'conversation_id', '3': 1, '4': 1, '5': 3, '10': 'conversationId'},
-    {'1': 'user_id', '3': 2, '4': 1, '5': 3, '10': 'userId'},
-  ],
-};
-
-/// Descriptor for `StreamMessagesRequest`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List streamMessagesRequestDescriptor = $convert.base64Decode(
-    'ChVTdHJlYW1NZXNzYWdlc1JlcXVlc3QSJwoPY29udmVyc2F0aW9uX2lkGAEgASgDUg5jb252ZX'
-    'JzYXRpb25JZBIXCgd1c2VyX2lkGAIgASgDUgZ1c2VySWQ=');
 
 @$core.Deprecated('Use syncMessagesResponseDescriptor instead')
 const SyncMessagesResponse$json = {
