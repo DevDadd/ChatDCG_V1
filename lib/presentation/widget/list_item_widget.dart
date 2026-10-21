@@ -1,3 +1,4 @@
+import 'package:chatdcg_demo/presentation/widget/avatar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,9 +11,11 @@ class ListItemWidget extends StatelessWidget {
     required this.lastMessage,
     required this.noti,
     required this.time,
+    this.avatarUrl,
   });
 
   final String name;
+  final String? avatarUrl;
   final String lastMessage;
   final String time;
   final int noti;
@@ -24,15 +27,7 @@ class ListItemWidget extends StatelessWidget {
       color: Colors.transparent,
       child: Row(
         children: [
-          Container(
-            // Needs a width too: inside a Row an empty Container shrinks to 0
-            width: 60.r,
-            height: 60.r,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.lightBlue,
-            ),
-          ),
+          AvatarWidget(url: avatarUrl, size: 60.r),
           SizedBox(width: 12.w),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

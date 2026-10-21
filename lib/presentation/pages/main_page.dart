@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatdcg_demo/presentation/pages/contacts_page.dart';
 import 'package:chatdcg_demo/presentation/pages/home_page.dart';
 import 'package:chatdcg_demo/presentation/widget/bottom_menu_widget.dart';
@@ -21,8 +23,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
-      // Lets the tab content scroll behind the bar so the glass has something to blur
-      extendBody: true,
+      // iOS: lets the tab content scroll behind the bar so the glass has
+      // something to blur. The Android bar is opaque, so content stops above it
+      extendBody: Platform.isIOS,
       // IndexedStack keeps every tab alive: switching back keeps its scroll
       // position and does not reload it
       body: IndexedStack(
@@ -34,10 +37,15 @@ class _MainPageState extends State<MainPage> {
           _ComingSoonPage(title: 'Settings'),
         ],
       ),
-      bottomNavigationBar: GlassTabBar(
-        currentIndex: _tab.index,
-        onChanged: (i) => setState(() => _tab = BottomMenuTab.values[i]),
-      ),
+      bottomNavigationBar: Platform.isIOS
+          ? GlassTabBar(
+              currentIndex: _tab.index,
+              onChanged: (i) => setState(() => _tab = BottomMenuTab.values[i]),
+            )
+          : BottomMenuWidget(
+              current: _tab,
+              onTap: (tab) => setState(() => _tab = tab),
+            ),
     );
   }
 }

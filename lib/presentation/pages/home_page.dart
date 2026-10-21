@@ -128,8 +128,20 @@ class _HomePageState extends State<HomePage> {
               child: BlocBuilder<AuthenCubit, AuthenState>(
                 buildWhen: (previous, current) =>
                     previous.conversations != current.conversations ||
-                    previous.userStatus != current.userStatus,
+                    previous.userStatus != current.userStatus ||
+                    previous.isConversationsLoading !=
+                        current.isConversationsLoading,
                 builder: (context, state) {
+                  // Spinner only before the first list arrives: reloads after
+                  // leaving a chat keep showing the old list instead of flashing
+                  if (state.isConversationsLoading &&
+                      state.conversations == null) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.lightBlue,
+                      ),
+                    );
+                  }
                   final conversations =
                       state.conversations?.conversations ?? [];
                   return ListView.separated(
@@ -156,9 +168,9 @@ class _HomePageState extends State<HomePage> {
                                 id: otherUserId,
                                 isOnline: isOnline,
                                 userName: otherUser?.displayName ?? "",
+                                avatarUrl: otherUser?.avatarUrl,
                               ),
                             ),
-                            // Chat may have created a new conversation: reload
                           ).then((_) {
                             if (context.mounted) {
                               context.read<AuthenCubit>().getConversations();
@@ -167,6 +179,7 @@ class _HomePageState extends State<HomePage> {
                         },
                         child: ListItemWidget(
                           name: otherUser?.displayName ?? "",
+                          avatarUrl: otherUser?.avatarUrl,
                           lastMessage: "",
                           noti: 0,
                           time: createdAt == null
@@ -176,7 +189,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       );
                     },
-                    // Starts past the 60.r avatar so the line only spans the text area
                     separatorBuilder: (context, index) => Divider(
                       indent: 60.r + 12.w,
                       height: 1,

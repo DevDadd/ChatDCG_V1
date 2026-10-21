@@ -1,6 +1,5 @@
 import 'package:chatdcg_demo/data/models/auth_models.dart';
 import 'package:chatdcg_demo/data/models/conversation_list_dto.dart';
-import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
 import 'package:chatdcg_demo/data/models/sync_message_response.dart';
@@ -15,8 +14,12 @@ abstract class AuthenRepository {
   /// Messages with [otherUserId], oldest first. Empty if the two never chatted;
   /// the server then creates the conversation and returns its id.
   Future<MessageHistoryDto> getHistory(int otherUserId);
-  Future<MessageBaseResponse> sendMessage(SendMessageRequest request);
-  Stream<Message> streamMessages(int conversationid);
+
+  /// Bidirectional Chat RPC. Each request added to [outgoing] is sent as a
+  /// message; the returned stream carries messages from the other
+  /// participants of all the caller's conversations (never the caller's own).
+  /// A rejected message (wrong conversation, wrong sender) ends the stream.
+  Stream<Message> chat(Stream<SendMessageRequest> outgoing);
   Future<void> sentTypingStatus(int conversationid, bool isTyping, int userId);
   Stream<TypingStreamDto> streamTypingStatus(int conversationid, int userid);
   Future<SyncMessageResponse> syncMessages(List<SendMessageRequest> requests);

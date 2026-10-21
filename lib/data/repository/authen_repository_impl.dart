@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:chatdcg_demo/data/gRPC/gRPC_client.dart';
 import 'package:chatdcg_demo/data/models/auth_models.dart';
 import 'package:chatdcg_demo/data/models/conversation_list_dto.dart';
-import 'package:chatdcg_demo/data/models/message_baseresponse.dart';
 import 'package:chatdcg_demo/data/models/message_history.dart';
 import 'package:chatdcg_demo/data/models/send_message_request.dart';
 import 'package:chatdcg_demo/data/models/sync_message_response.dart';
@@ -60,6 +59,7 @@ class AuthenRepositoryImpl implements AuthenRepository {
                 displayName: u.displayName,
                 isOnline: u.isOnline,
                 lastSeen: u.lastSeen,
+                avatarUrl: _nonEmpty(u.avatarUrl),
               ),
             )
             .toList(),
@@ -111,29 +111,6 @@ class AuthenRepositoryImpl implements AuthenRepository {
   }
 
   @override
-  Future<MessageBaseResponse> sendMessage(SendMessageRequest request) async {
-    try {
-      final res = await _grpc.chat.sendMessage(
-        pb.SendMessageRequest(
-          conversationId: _int64(request.conversationId),
-          // 0 = server dùng user đang đăng nhập (x-user-id) / giờ server
-          senderId: _int64(request.senderId),
-          content: request.content ?? '',
-          clientTimestampMs: _int64(request.clientTimestampMs),
-        ),
-        options: _options,
-      );
-      return MessageBaseResponse(
-        success: res.success,
-        message: res.message,
-        messageId: res.messageId.toString(),
-      );
-    } on GrpcError catch (e) {
-      throw AuthException(_message(e), statusCode: e.code);
-    }
-  }
-
-  @override
   Future<void> sentTypingStatus(
     int conversationid,
     bool isTyping,
@@ -153,12 +130,23 @@ class AuthenRepositoryImpl implements AuthenRepository {
     }
   }
 
+  // No timeout: the stream stays open while the chat page is
   @override
-  Stream<Message> streamMessages(int conversationid) => _grpc.chat
-      .streamMessages(
-        pb.StreamMessagesRequest(conversationId: Int64(conversationid)),
+  Stream<Message> chat(Stream<SendMessageRequest> outgoing) => _grpc.chat
+      .chat(
+        outgoing.map(
+          (r) => pb.ChatClientMessage(
+            conversationId: _int64(r.conversationId),
+            // Must be the logged-in user (or 0), or the server ends the stream
+            senderId: _int64(r.senderId),
+            content: r.content ?? '',
+          ),
+        ),
       )
       .map(_map);
+
+  // proto3 strings are '' when unset
+  String? _nonEmpty(String value) => value.isEmpty ? null : value;
 
   Int64 _int64(String? value) => Int64.tryParseInt(value ?? '') ?? Int64.ZERO;
 
@@ -207,6 +195,7 @@ class AuthenRepositoryImpl implements AuthenRepository {
                   account: c.otherUser.account,
                   username: c.otherUser.username,
                   displayName: c.otherUser.displayName,
+                  avatarUrl: _nonEmpty(c.otherUser.avatarUrl),
                 ),
               ),
             )
@@ -227,6 +216,7 @@ class AuthenRepositoryImpl implements AuthenRepository {
           account: user.account,
           username: user.username,
           displayName: user.displayName,
+          avatarUrl: _nonEmpty(user.avatarUrl),
         ),
       );
     } on GrpcError catch (e) {

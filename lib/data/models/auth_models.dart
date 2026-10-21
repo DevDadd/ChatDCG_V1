@@ -12,6 +12,7 @@ class User extends Equatable {
     required this.account,
     required this.username,
     required this.displayName,
+    this.avatarUrl,
   });
 
   final int id;
@@ -19,12 +20,15 @@ class User extends Equatable {
   final String username;
   final String displayName;
 
+  // Empty from the server = no avatar, stored as null
+  final String? avatarUrl;
+
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 
   Map<String, dynamic> toJson() => _$UserToJson(this);
 
   @override
-  List<Object?> get props => [id, account, username, displayName];
+  List<Object?> get props => [id, account, username, displayName, avatarUrl];
 }
 
 @JsonSerializable(createFactory: false)

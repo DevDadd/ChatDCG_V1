@@ -23,6 +23,8 @@ abstract class _$AuthenStateCWProxy {
 
   AuthenState conversations(ConversationListDto? conversations);
 
+  AuthenState isConversationsLoading(bool isConversationsLoading);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -40,6 +42,7 @@ abstract class _$AuthenStateCWProxy {
     bool isHistoryLoading,
     bool isOtherTyping,
     ConversationListDto? conversations,
+    bool isConversationsLoading,
   });
 }
 
@@ -79,6 +82,10 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
   AuthenState conversations(ConversationListDto? conversations) =>
       call(conversations: conversations);
 
+  @override
+  AuthenState isConversationsLoading(bool isConversationsLoading) =>
+      call(isConversationsLoading: isConversationsLoading);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `AuthenState(...).copyWith.fieldName(value)`.
@@ -97,6 +104,7 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
     Object? isHistoryLoading = const $CopyWithPlaceholder(),
     Object? isOtherTyping = const $CopyWithPlaceholder(),
     Object? conversations = const $CopyWithPlaceholder(),
+    Object? isConversationsLoading = const $CopyWithPlaceholder(),
   }) {
     return AuthenState(
       status: status == const $CopyWithPlaceholder() || status == null
@@ -134,6 +142,12 @@ class _$AuthenStateCWProxyImpl implements _$AuthenStateCWProxy {
           ? _value.conversations
           // ignore: cast_nullable_to_non_nullable
           : conversations as ConversationListDto?,
+      isConversationsLoading:
+          isConversationsLoading == const $CopyWithPlaceholder() ||
+              isConversationsLoading == null
+          ? _value.isConversationsLoading
+          // ignore: cast_nullable_to_non_nullable
+          : isConversationsLoading as bool,
     );
   }
 }

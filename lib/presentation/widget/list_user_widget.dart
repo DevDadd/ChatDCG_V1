@@ -1,3 +1,4 @@
+import 'package:chatdcg_demo/presentation/widget/avatar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -6,8 +7,10 @@ class ListUserWidget extends StatelessWidget {
     super.key,
     required this.userName,
     required this.status,
+    this.avatarUrl,
   });
   final String userName;
+  final String? avatarUrl;
   final bool status;
   @override
   Widget build(BuildContext context) {
@@ -19,14 +22,7 @@ class ListUserWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            height: 40.h,
-            width: 40.h,
-            decoration: BoxDecoration(
-              color: Colors.lightBlue,
-              shape: BoxShape.circle,
-            ),
-          ),
+          AvatarWidget(url: avatarUrl, size: 40.h),
           SizedBox(width: 10.w),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

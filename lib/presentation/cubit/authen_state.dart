@@ -20,6 +20,7 @@ class AuthenState extends Equatable {
     this.isHistoryLoading = false,
     this.isOtherTyping = false,
     this.conversations,
+    this.isConversationsLoading = false,
   });
 
   final AuthenStatus status;
@@ -40,6 +41,7 @@ class AuthenState extends Equatable {
   final bool isOtherTyping;
 
   final ConversationListDto? conversations;
+  final bool isConversationsLoading;
 
   bool get isLoading => status == AuthenStatus.loading;
   bool get isAuthenticated => status == AuthenStatus.authenticated;
@@ -54,5 +56,6 @@ class AuthenState extends Equatable {
     isHistoryLoading,
     isOtherTyping,
     conversations,
+    isConversationsLoading,
   ];
 }

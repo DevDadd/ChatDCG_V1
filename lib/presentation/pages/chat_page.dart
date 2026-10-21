@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:chatdcg_demo/presentation/cubit/authen_cubit.dart';
 import 'package:chatdcg_demo/presentation/cubit/authen_state.dart';
+import 'package:chatdcg_demo/presentation/widget/avatar_widget.dart';
 import 'package:chatdcg_demo/presentation/widget/message_bubble_widget.dart';
 import 'package:chatdcg_demo/presentation/widget/typing_bubble_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,10 @@ class ChatPage extends StatefulWidget {
     required this.id,
     required this.isOnline,
     required this.userName,
+    this.avatarUrl,
   });
   final String userName;
+  final String? avatarUrl;
   final int id;
   final bool isOnline;
 
@@ -79,14 +82,7 @@ class _ChatPageState extends State<ChatPage> {
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ClipOval(
-              child: Container(
-                height: 37.h,
-                width: 37.h,
-                color: Colors.lightBlue,
-                child: Image.asset("assets/dcg_avatar.png", fit: BoxFit.cover),
-              ),
-            ),
+            child: AvatarWidget(url: widget.avatarUrl, size: 37.h),
           ),
         ],
         centerTitle: true,

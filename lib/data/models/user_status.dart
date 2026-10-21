@@ -27,6 +27,8 @@ class UserStatus {
   bool? isOnline;
   @JsonKey(name: "last_seen")
   String? lastSeen;
+  @JsonKey(name: "avatar_url")
+  String? avatarUrl;
 
   UserStatus({
     this.userId,
@@ -34,6 +36,7 @@ class UserStatus {
     this.displayName,
     this.isOnline,
     this.lastSeen,
+    this.avatarUrl,
   });
 
   factory UserStatus.fromJson(Map<String, dynamic> json) =>

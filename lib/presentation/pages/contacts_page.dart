@@ -33,10 +33,18 @@ class _ContactsPageState extends State<ContactsPage> {
       backgroundColor: const Color(0x1C1C1E),
       appBar: AppBar(
         backgroundColor: const Color(0x1C1C1E),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 12),
-          child: LiquidButton(label: "Sort", height: 36, onPressed: () {}),
-        ),
+        // Sort only exists as the iOS glass button; Android keeps the old
+        // AppBar (no leading, so the back arrow shows when pushed from Edit)
+        leading: Platform.isIOS
+            ? Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: LiquidButton(
+                  label: "Sort",
+                  height: 36,
+                  onPressed: () {},
+                ),
+              )
+            : null,
         title: Text(
           "Contacts",
           style: GoogleFonts.inter(
@@ -46,7 +54,7 @@ class _ContactsPageState extends State<ContactsPage> {
           ),
         ),
         centerTitle: true,
-        leadingWidth: 88,
+        leadingWidth: Platform.isIOS ? 88 : 72,
 
         actions: [
           if (Platform.isIOS)
@@ -110,6 +118,7 @@ class _ContactsPageState extends State<ContactsPage> {
                           id: users[index].userId ?? 0,
                           isOnline: users[index].isOnline ?? false,
                           userName: users[index].displayName ?? "",
+                          avatarUrl: users[index].avatarUrl,
                         ),
                       ),
                     ).then((_) {
@@ -120,6 +129,7 @@ class _ContactsPageState extends State<ContactsPage> {
                   child: ListUserWidget(
                     userName: users[index].displayName ?? "",
                     status: users[index].isOnline ?? false,
+                    avatarUrl: users[index].avatarUrl,
                   ),
                 );
               },

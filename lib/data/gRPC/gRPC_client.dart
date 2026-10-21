@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:chatdcg_demo/generated/chat.pbgrpc.dart';
@@ -57,10 +58,20 @@ class _UserIdInterceptor extends ClientInterceptor {
   ) => invoker(method, requests, _withUserId(options));
 }
 
-/// Logs every call to the debug console. Incoming stream messages are not
-/// logged one by one; only when the stream opens and how it ends.
+/// Logs every call to the debug console: requests, responses, and for
+/// streams when they open, each message both ways, and how they end.
 class _LoggingInterceptor extends ClientInterceptor {
   void _log(String message) => log(message, name: 'gRPC');
+
+  // interceptStreaming gets every non-unary call and ClientMethod does not say
+  // which kind, so it comes from chat.proto. Update when an RPC is added.
+  static const _streamKinds = {
+    '/chat.ChatService/StreamMessages': 'Server stream',
+    '/chat.ChatService/SubscribeTyping': 'Server stream',
+    '/chat.ChatService/Presence': 'Server stream',
+    '/chat.ChatService/SyncMessages': 'Client stream',
+    '/chat.ChatService/Chat': 'Bidi stream',
+  };
 
   @override
   ResponseFuture<R> interceptUnary<Q, R>(
@@ -70,14 +81,14 @@ class _LoggingInterceptor extends ClientInterceptor {
     ClientUnaryInvoker<Q, R> invoker,
   ) {
     final watch = Stopwatch()..start();
-    _log('--> ${method.path} ${options.metadata}\n$request');
+    _log('[Unary] --> ${method.path} ${options.metadata}\n$request');
     final response = invoker(method, request, options);
     response.then(
       (value) => _log(
-        '<-- ${method.path} OK (${watch.elapsedMilliseconds}ms)\n$value',
+        '[Unary] <-- ${method.path} OK (${watch.elapsedMilliseconds}ms)\n$value',
       ),
       onError: (Object e) => _log(
-        '<-- ${method.path} FAILED (${watch.elapsedMilliseconds}ms) $e',
+        '[Unary] <-- ${method.path} FAILED (${watch.elapsedMilliseconds}ms) $e',
       ),
     );
     return response;
@@ -91,23 +102,55 @@ class _LoggingInterceptor extends ClientInterceptor {
     ClientStreamingInvoker<Q, R> invoker,
   ) {
     final watch = Stopwatch()..start();
-    _log('==> ${method.path} stream open ${options.metadata}');
+    final kind = '[${_streamKinds[method.path] ?? 'Stream'}]';
+    _log('$kind ==> ${method.path} stream open ${options.metadata}');
     final response = invoker(
       method,
       requests.map((request) {
-        _log('--> ${method.path}\n$request');
+        _log('$kind --> ${method.path}\n$request');
         return request;
       }),
       options,
     );
     response.trailers.then(
       (_) => _log(
-        '<== ${method.path} stream closed (${watch.elapsedMilliseconds}ms)',
+        '$kind <== ${method.path} stream closed (${watch.elapsedMilliseconds}ms)',
       ),
       onError: (Object e) => _log(
-        '<== ${method.path} stream FAILED (${watch.elapsedMilliseconds}ms) $e',
+        '$kind <== ${method.path} stream FAILED (${watch.elapsedMilliseconds}ms) $e',
       ),
     );
-    return response;
+    return _LoggedResponseStream(
+      response,
+      (message) => _log('$kind <-- ${method.path}\n$message'),
+    );
   }
+}
+
+/// ResponseStream that logs each message the server sends. The original is
+/// single-subscription and can only be built by grpc itself, so this wraps it
+/// instead of listening twice.
+class _LoggedResponseStream<R> extends StreamView<R>
+    implements ResponseStream<R> {
+  _LoggedResponseStream(this._inner, void Function(R message) onMessage)
+    : super(
+        _inner.map((message) {
+          onMessage(message);
+          return message;
+        }),
+      );
+
+  final ResponseStream<R> _inner;
+
+  @override
+  Future<Map<String, String>> get headers => _inner.headers;
+
+  @override
+  Future<Map<String, String>> get trailers => _inner.trailers;
+
+  @override
+  Future<void> cancel() => _inner.cancel();
+
+  @override
+  ResponseFuture<R> get single => _inner.single;
 }

@@ -17,6 +17,13 @@ class OtherUser {
   String? account;
   String? username;
   String? displayName;
+  String? avatarUrl;
 
-  OtherUser({this.id, this.account, this.username, this.displayName});
+  OtherUser({
+    this.id,
+    this.account,
+    this.username,
+    this.displayName,
+    this.avatarUrl,
+  });
 }

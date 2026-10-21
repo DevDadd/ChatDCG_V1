@@ -15,6 +15,8 @@ abstract class _$UserCWProxy {
 
   User displayName(String displayName);
 
+  User avatarUrl(String? avatarUrl);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `User(...).copyWith.fieldName(value)`.
@@ -23,7 +25,13 @@ abstract class _$UserCWProxy {
   /// ```dart
   /// User(...).copyWith(id: 12, name: "My name")
   /// ```
-  User call({int id, String account, String username, String displayName});
+  User call({
+    int id,
+    String account,
+    String username,
+    String displayName,
+    String? avatarUrl,
+  });
 }
 
 /// Callable proxy for `copyWith` functionality.
@@ -45,6 +53,9 @@ class _$UserCWProxyImpl implements _$UserCWProxy {
   @override
   User displayName(String displayName) => call(displayName: displayName);
 
+  @override
+  User avatarUrl(String? avatarUrl) => call(avatarUrl: avatarUrl);
+
   /// Creates a new instance with the provided field values.
   /// Omitted fields keep their values; explicit `null` clears nullable fields.
   /// The public API rejects `null` for non-nullable fields. To update a single field use `User(...).copyWith.fieldName(value)`.
@@ -59,6 +70,7 @@ class _$UserCWProxyImpl implements _$UserCWProxy {
     Object? account = const $CopyWithPlaceholder(),
     Object? username = const $CopyWithPlaceholder(),
     Object? displayName = const $CopyWithPlaceholder(),
+    Object? avatarUrl = const $CopyWithPlaceholder(),
   }) {
     return User(
       id: id == const $CopyWithPlaceholder() || id == null
@@ -78,6 +90,10 @@ class _$UserCWProxyImpl implements _$UserCWProxy {
           ? _value.displayName
           // ignore: cast_nullable_to_non_nullable
           : displayName as String,
+      avatarUrl: avatarUrl == const $CopyWithPlaceholder()
+          ? _value.avatarUrl
+          // ignore: cast_nullable_to_non_nullable
+          : avatarUrl as String?,
     );
   }
 }
@@ -98,6 +114,7 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
   account: json['account'] as String,
   username: json['username'] as String,
   displayName: json['display_name'] as String,
+  avatarUrl: json['avatar_url'] as String?,
 );
 
 Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
@@ -105,6 +122,7 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
   'account': instance.account,
   'username': instance.username,
   'display_name': instance.displayName,
+  'avatar_url': instance.avatarUrl,
 };
 
 Map<String, dynamic> _$LoginRequestToJson(LoginRequest instance) =>

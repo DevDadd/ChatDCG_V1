@@ -20,6 +20,8 @@ class AuthenCubit extends Cubit<AuthenState> {
   final TextEditingController chatController = TextEditingController();
   final AuthenRepository _repository = getIt<AuthenRepository>();
   StreamSubscription<Message>? _messageStream;
+  // Request side of the open Chat stream: adding to it sends a message
+  StreamController<SendMessageRequest>? _chatOutgoing;
   StreamSubscription<TypingStreamDto>? _typingStream;
   int? _streamConversationId;
   StreamSubscription<UserStatus>? _presence;
@@ -148,10 +150,14 @@ class AuthenCubit extends Cubit<AuthenState> {
   }
 
   void _listenMessages(int conversationId) {
-    _messageStream?.cancel();
-    _logStream('mở stream, conversation $conversationId');
+    _closeChat();
+    _logStream('mở Chat stream, conversation $conversationId');
+    final outgoing = StreamController<SendMessageRequest>();
+    _chatOutgoing = outgoing;
+    // Chat delivers every conversation of the user: _onMessage keeps only
+    // the open one
     _messageStream = _repository
-        .streamMessages(conversationId)
+        .chat(outgoing.stream)
         .listen(
           _onMessage,
           onError: (Object e) {
@@ -167,9 +173,15 @@ class AuthenCubit extends Cubit<AuthenState> {
 
   void _logStream(String text) => debugPrint('[MessageStream] $text');
 
-  void _restartMessageStream(int conversationId) {
+  void _closeChat() {
     _messageStream?.cancel();
     _messageStream = null;
+    _chatOutgoing?.close();
+    _chatOutgoing = null;
+  }
+
+  void _restartMessageStream(int conversationId) {
+    _closeChat();
     _logStream('kết nối lại sau 2s, conversation $conversationId');
     Future.delayed(const Duration(seconds: 2), () {
       if (isClosed ||
@@ -189,8 +201,7 @@ class AuthenCubit extends Cubit<AuthenState> {
       _logStream('ngắt stream, conversation $_streamConversationId');
     }
     _streamConversationId = null;
-    _messageStream?.cancel();
-    _messageStream = null;
+    _closeChat();
     _typingStream?.cancel();
     _typingStream = null;
     // Or the next chat opens showing "typing" from this one
@@ -362,34 +373,26 @@ class AuthenCubit extends Cubit<AuthenState> {
     _setTyping(false);
     _emitMessages([...messages, pending]);
 
-    if (_offlineQueue.isNotEmpty) {
+    // Chat stream down (reconnecting) or older messages still waiting:
+    // queue so SyncMessages sends them in order
+    final outgoing = _chatOutgoing;
+    if (outgoing == null || _offlineQueue.isNotEmpty) {
       _queueOffline(pending);
       syncOfflineMessages();
       return;
     }
 
-    try {
-      final response = await _repository.sendMessage(
-        SendMessageRequest(
-          conversationId: conversationId.toString(),
-          senderId: state.user?.id.toString(),
-          content: text,
-          clientTimestampMs: pending.timestamp!.millisecondsSinceEpoch
-              .toString(),
-        ),
-      );
-      pending.messageId = int.tryParse(response.messageId ?? '');
-    } on AuthException catch (e) {
-      if (isClosed) return;
-      if (_isNetworkError(e)) {
-        _queueOffline(pending);
-        return;
-      }
-      _removeMessage(pending, text, e.message);
-    } catch (_) {
-      if (isClosed) return;
-      _removeMessage(pending, text, 'Gửi tin nhắn thất bại, vui lòng thử lại');
-    }
+    // No reply per message on Chat: the server never echoes our own
+    // messages, so the bubble keeps messageId null. A rejected message ends
+    // the stream, which then reconnects.
+    _logStream('gửi qua Chat, conversation $conversationId: $text');
+    outgoing.add(
+      SendMessageRequest(
+        conversationId: conversationId.toString(),
+        senderId: state.user?.id.toString(),
+        content: text,
+      ),
+    );
   }
 
   void _emitMessages(List<Message> messages) {
@@ -403,13 +406,6 @@ class AuthenCubit extends Cubit<AuthenState> {
         errorMessage: null,
       ),
     );
-  }
-
-  void _removeMessage(Message pending, String text, String error) {
-    final messages = [...?state.history?.messages]..remove(pending);
-    _emitMessages(messages);
-    if (chatController.text.isEmpty) chatController.text = text;
-    emit(state.copyWith(errorMessage: error));
   }
 
   void _logSync(String text) => debugPrint('[Sync] $text');
@@ -484,13 +480,23 @@ class AuthenCubit extends Cubit<AuthenState> {
   }
 
   Future<void> getConversations() async {
+    emit(state.copyWith(isConversationsLoading: true));
     try {
       final response = await _repository.getConversation();
-      emit(state.copyWith(conversations: response));
+      emit(
+        state.copyWith(conversations: response, isConversationsLoading: false),
+      );
     } on AuthException catch (e) {
-      emit(state.copyWith(errorMessage: e.message));
+      emit(
+        state.copyWith(errorMessage: e.message, isConversationsLoading: false),
+      );
     } catch (_) {
-      emit(state.copyWith(errorMessage: 'Không tải được danh sách trò chuyện'));
+      emit(
+        state.copyWith(
+          errorMessage: 'Không tải được danh sách trò chuyện',
+          isConversationsLoading: false,
+        ),
+      );
     }
   }
 
@@ -532,6 +538,8 @@ class AuthenCubit extends Cubit<AuthenState> {
         displayName: old.displayName,
         isOnline: event.isOnline,
         lastSeen: event.lastSeen,
+        // Presence events carry no avatar
+        avatarUrl: old.avatarUrl,
       );
     emit(state.copyWith(userStatus: UserStatusDto(users: updated)));
   }

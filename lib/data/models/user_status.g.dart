@@ -22,6 +22,7 @@ UserStatus _$UserStatusFromJson(Map<String, dynamic> json) => UserStatus(
   displayName: json['display_name'] as String?,
   isOnline: json['is_online'] as bool?,
   lastSeen: json['last_seen'] as String?,
+  avatarUrl: json['avatar_url'] as String?,
 );
 
 Map<String, dynamic> _$UserStatusToJson(UserStatus instance) =>
@@ -31,4 +32,5 @@ Map<String, dynamic> _$UserStatusToJson(UserStatus instance) =>
       'display_name': instance.displayName,
       'is_online': instance.isOnline,
       'last_seen': instance.lastSeen,
+      'avatar_url': instance.avatarUrl,
     };
